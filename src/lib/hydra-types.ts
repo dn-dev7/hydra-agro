@@ -15,7 +15,8 @@ export type AppRoute =
   | "climate"
   | "plus"
   | "production"
-  | "admin"\n  | "research";
+  | "admin"
+  | "research";
 
 export type UserRole = "user" | "moderator" | "admin" | "owner";
 export type StaffRole = "employee" | "manager";
