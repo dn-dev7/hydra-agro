@@ -84,7 +84,7 @@ export function ResearchImpactScreen({ account, onBack }: Props) {
   }
 
   return <div className="screen page-enter extra-screen research-screen">
-    <ScreenHeader eyebrow="FECIBA 2027" title="Pesquisa e Impacto" subtitle="Teste o Hydra Agro e gere resultados a partir dos dados coletados." onBack={onBack} />
+    <ScreenHeader eyebrow="DADOS DO PROJETO" title="Pesquisa e Impacto" subtitle="Teste o Hydra Agro e gere resultados a partir dos dados coletados." onBack={onBack} />
     <div className={"research-sync " + (data.pendingSync ? "pending" : "ok")} role="status">
       {data.pendingSync ? <WifiOff size={16} /> : <CheckCircle2 size={16} />}
       <span>{data.pendingSync ? "Salvo no dispositivo · aguardando conexão" : "Sincronizado"}</span>
