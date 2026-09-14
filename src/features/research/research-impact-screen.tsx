@@ -89,10 +89,10 @@ export function ResearchImpactScreen({ account, onBack }: Props) {
       {data.pendingSync ? <WifiOff size={16} /> : <CheckCircle2 size={16} />}
       <span>{data.pendingSync ? "Salvo no dispositivo · aguardando conexão" : "Sincronizado"}</span>
     </div>
-    <div className="research-tabs" role="tablist">
-      <button className={tab === "results" ? "active" : ""} onClick={() => setTab("results")}>Resultados</button>
-      <button className={tab === "tests" ? "active" : ""} onClick={() => setTab("tests")}>Testes</button>
-      <button className={tab === "methodology" ? "active" : ""} onClick={() => setTab("methodology")}>Metodologia</button>
+    <div className="research-tabs" role="tablist" aria-label="Seções de pesquisa e impacto">
+      <button role="tab" aria-selected={tab === "results"} className={tab === "results" ? "active" : ""} onClick={() => setTab("results")}><BarChart3 size={16} />Resultados</button>
+      <button role="tab" aria-selected={tab === "tests"} className={tab === "tests" ? "active" : ""} onClick={() => setTab("tests")}><ClipboardList size={16} />Testes</button>
+      <button role="tab" aria-selected={tab === "methodology"} className={tab === "methodology" ? "active" : ""} onClick={() => setTab("methodology")}><FlaskConical size={16} />Método</button>
     </div>
 
     {!loaded ? <div className="research-empty">Carregando dados…</div> : tab === "results" ? <div className="research-stack">
