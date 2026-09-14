@@ -10,7 +10,7 @@ import {
   CircleHelp,
   Crown,
   ExternalLink,
-  FileText,
+  FileText,\n  FlaskConical,
   HeartHandshake,
   Instagram,
   LoaderCircle,
@@ -265,7 +265,7 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
         <button onClick={() => navigate("plus")}>{isPlus ? "Abrir painel" : "Conhecer"}</button>
       </section>
 
-      {isAdmin && <section className="profile-group"><span className="group-label">ADMINISTRAÇÃO</span><div className="profile-menu-card admin-access-card"><MenuRow icon={<ShieldCheck size={21} />} title="Painel administrativo" subtitle="Acesso autorizado" onClick={() => navigate("admin")} /></div></section>}
+      {isAdmin && <section className="profile-group"><span className="group-label">ADMINISTRAÇÃO</span><div className="profile-menu-card admin-access-card"><MenuRow icon={<ShieldCheck size={21} />} title="Painel administrativo" subtitle="Acesso autorizado" onClick={() => navigate("admin")} /><MenuRow icon={<FlaskConical size={21} />} title="Pesquisa e Impacto" subtitle="Testes, metodologia e resultados da FECIBA" onClick={() => navigate("research")} /></div></section>}
 
       <section className="profile-group">
         <span className="group-label">MINHA CONTA</span>
