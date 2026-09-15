@@ -27,6 +27,10 @@
       "destination": "/download/index.html"
     },
     {
+      "source": "/tools/keystore",
+      "destination": "/tools/keystore-base64.html"
+    },
+    {
       "source": "/((?!api/|sitemap\\.xml$|robots\\.txt$|manifest\\.webmanifest$|sw\\.js$|.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
@@ -109,6 +113,19 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex, nofollow, nosnippet"
+        }
+      ]
+    },
+    {
+      "source": "/tools/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, private"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive, nosnippet"
         }
       ]
     },
