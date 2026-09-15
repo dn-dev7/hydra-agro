@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://www.hydraagro.sbs/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+  <url><loc>https://www.hydraagro.sbs/</loc></url>
+  <url><loc>https://www.hydraagro.sbs/sobre</loc></url>
+  <url><loc>https://www.hydraagro.sbs/funcionalidades</loc></url>
+  <url><loc>https://www.hydraagro.sbs/identificacao-animal</loc></url>
+  <url><loc>https://www.hydraagro.sbs/gestao-de-agua</loc></url>
 </urlset>

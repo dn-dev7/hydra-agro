@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, KeyRound, LockKeyhole, MailCheck, MapPin, UserRound, UsersRound } from "lucide-react";
+import { Welcome } from "../../public/welcome";
 import { HydraMark } from "../../components/brand";
 import { PropertyLocationFields } from "../../components/property-location-fields";
 import { Field } from "../../components/ui";
@@ -234,7 +235,7 @@ export function AuthFlow({ initialView = "landing", onLogin, onStaffLogin, onSig
   }
 
   if (view === "landing") {
-    return <main className="auth-landing"><div className="auth-landing-shade" aria-hidden="true" /><section className="auth-landing-content"><span className="auth-landing-mark-wrap"><HydraMark className="auth-landing-mark" /></span><p className="auth-landing-kicker">Gestão rural em um só lugar</p><h1>Água, rebanho e rotina.<br /><strong>Juntos.</strong></h1><p className="auth-landing-copy">Use o Hydra Agro no Android, iPhone, iPad ou computador.</p><div className="auth-landing-actions"><button className="auth-landing-primary" type="button" onClick={() => openAuth("login")}>Entrar</button><button className="auth-landing-secondary" type="button" onClick={() => openAuth("signup")}>Criar conta</button></div><button className="auth-landing-staff" type="button" onClick={() => openAuth("login", "staff")}><UsersRound size={17} /> Acesso de funcionário</button></section></main>;
+    return <Welcome onEnter={() => openAuth("login")} onSignup={() => openAuth("signup")} onStaff={() => openAuth("login", "staff")} />;
   }
 
   return (

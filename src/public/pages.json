@@ -1,0 +1,56 @@
+[
+  {
+    "path": "/sobre",
+    "label": "Sobre",
+    "title": "Sobre o Hydra Agro | Gestão para pequenas propriedades rurais",
+    "heading": "Hydra Agro: organização para o produtor rural",
+    "description": "Conheça o Hydra Agro, aplicativo de gestão rural que reúne animais, água, setores e atividades de pequenas propriedades.",
+    "intro": "O Hydra Agro reúne informações da propriedade em um aplicativo. O produtor pode consultar os animais, acompanhar a água e organizar as tarefas do dia a dia sem depender de anotações espalhadas.",
+    "sections": [
+      { "heading": "Informações reunidas na propriedade", "text": "Animais, setores, atividades e registros de água ajudam a manter um histórico do que acontece na fazenda. Os registros são preenchidos pelo usuário e podem apoiar a organização e a tomada de decisões." },
+      { "heading": "Identificação e acompanhamento dos animais", "text": "Cada animal pode ter um cadastro com identificação, raça, idade, sexo e setor. A Hydra Tag relaciona uma identificação ao cadastro do animal, facilitando a consulta das informações disponíveis." },
+      { "heading": "Acesso ao aplicativo", "text": "O Hydra Agro pode ser acessado pelo navegador no celular ou computador. Para gerenciar uma propriedade, o produtor precisa entrar na própria conta. As informações da conta não são publicadas nestas páginas." }
+    ]
+  },
+  {
+    "path": "/funcionalidades",
+    "label": "Funcionalidades",
+    "title": "Funcionalidades do Hydra Agro | Animais, água e atividades rurais",
+    "heading": "Controle da propriedade em um só lugar",
+    "description": "Veja como o Hydra Agro organiza o rebanho, os setores, as atividades e os registros de água da propriedade rural.",
+    "intro": "O aplicativo organiza diferentes partes da rotina rural para que o produtor encontre os registros da propriedade quando precisar.",
+    "sections": [
+      { "heading": "Animais e rebanho", "text": "Cadastre os animais com informações como identificação, raça, idade, sexo e setor. Consulte o cadastro e mantenha os dados atualizados para acompanhar o rebanho." },
+      { "heading": "Propriedade e setores", "text": "Organize a propriedade em setores e relacione os registros às áreas correspondentes. Isso facilita saber onde estão os animais e o que acontece em cada local." },
+      { "heading": "Atividades e equipe", "text": "Registre as atividades da propriedade e acompanhe as tarefas. O acesso de funcionário permite participar da rotina conforme as permissões da conta." },
+      { "heading": "Água e clima", "text": "Acompanhe os registros de água e consulte as informações de clima disponíveis no aplicativo. Dados atualizados ajudam o produtor a avaliar a situação da propriedade." },
+      { "heading": "Histórico e planilhas", "text": "Consulte registros anteriores e use a Hydra Planilha para exportar informações da propriedade. O histórico depende dos dados registrados pelos usuários." }
+    ]
+  },
+  {
+    "path": "/identificacao-animal",
+    "label": "Identificação animal",
+    "title": "Hydra Tag | Identificação de animais no Hydra Agro",
+    "heading": "Identificação animal com a Hydra Tag",
+    "description": "Entenda como a Hydra Tag relaciona a identificação do animal ao cadastro no Hydra Agro e permite consultar as informações disponíveis.",
+    "intro": "A Hydra Tag relaciona um código de identificação ao cadastro de um animal no Hydra Agro. A identificação facilita encontrar o registro correto e consultar os dados disponíveis.",
+    "sections": [
+      { "heading": "Da identificação ao cadastro", "text": "A leitura de um QR Code ou a consulta de um código legível pode abrir o registro correspondente. A leitura por NFC depende de uma etiqueta compatível e de um aparelho com suporte à tecnologia." },
+      { "heading": "Informações sobre a propriedade", "text": "Quando a identificação está cadastrada e a consulta é permitida, o aplicativo apresenta as informações disponibilizadas para aquele animal. Uma foto, sozinha, não comprova quem é o proprietário." },
+      { "heading": "Animal solto ou de difícil aproximação", "text": "Não se aproxime de um animal bravo para ler uma etiqueta. Use apenas informações que possam ser obtidas de um local seguro. Lama, distância e danos na identificação podem impedir a leitura; NFC exige proximidade e não funciona como rastreador GPS." }
+    ]
+  },
+  {
+    "path": "/gestao-de-agua",
+    "label": "Gestão de água",
+    "title": "Gestão de água na propriedade rural | Hydra Agro",
+    "heading": "Acompanhamento da água na propriedade rural",
+    "description": "Organize os registros de água da propriedade rural no Hydra Agro e mantenha um histórico para acompanhar a rotina e os problemas de abastecimento.",
+    "intro": "A água faz parte da rotina de uma propriedade rural. Reunir os registros no Hydra Agro facilita consultar o que foi informado e acompanhar mudanças ao longo do tempo.",
+    "sections": [
+      { "heading": "Registros que ajudam na organização", "text": "Use a área de água para manter as informações da propriedade atualizadas. O histórico permite comparar registros e consultar situações anteriores sem depender apenas da memória." },
+      { "heading": "Problemas de abastecimento", "text": "Registros de falta de água e vazamentos ajudam a documentar quando e onde um problema foi percebido. O aplicativo não executa reparos nem garante o reabastecimento; as providências dependem dos responsáveis pelo serviço." },
+      { "heading": "Dados para apoiar decisões", "text": "Informações de água, clima e atividades podem apoiar o planejamento da rotina. A utilidade desse acompanhamento depende da frequência e da qualidade dos registros preenchidos pelo produtor." }
+    ]
+  }
+]

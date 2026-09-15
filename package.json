@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "description": "Aplicativo mobile Hydra Agro para gestão rural, hídrica, animal e tecnológica.",
-  "engines": { "node": ">=22.13.0" },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "npm run lint && vite build",
+    "build": "npm run lint && vite build && node scripts/prerender-public.mjs",
     "build:android": "npm run env:check && npm run build",
     "env:check": "node scripts/check-build-env.mjs",
     "test": "vitest run",
@@ -62,5 +64,10 @@
     "vite": "^8.0.13",
     "vitest": "^4.0.18"
   },
-  "overrides": { "@xmldom/xmldom": "0.9.12", "sharp": "0.35.4", "tar": "7.5.22", "uuid": "11.1.1" }
+  "overrides": {
+    "@xmldom/xmldom": "0.9.12",
+    "sharp": "0.35.4",
+    "tar": "7.5.22",
+    "uuid": "11.1.1"
+  }
 }

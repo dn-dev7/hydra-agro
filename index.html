@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
     <meta name="theme-color" content="#f8f6ef" />
-    <meta name="description" content="Hydra Agro — tecnologia rural para rebanho, equipe e operações da propriedade." />
+    <meta name="description" content="Hydra Agro é um aplicativo de gestão rural para organizar animais, água, setores e atividades de pequenas propriedades rurais." />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Hydra Agro" />
     <link rel="canonical" href="https://www.hydraagro.sbs/" />
+    <link rel="stylesheet" href="/hydra-public.css" />
     <link rel="icon" href="/hydra-mark.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
     <link rel="manifest" href="/manifest.webmanifest?v=2" />
@@ -17,23 +18,41 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:site_name" content="Hydra Agro" />
-    <meta property="og:title" content="Hydra Agro" />
-    <meta property="og:description" content="Tecnologia rural para rebanho, equipe e operações da propriedade." />
+    <meta property="og:title" content="Hydra Agro | Gestão Rural, Animais e Água" />
+    <meta property="og:description" content="Hydra Agro é um aplicativo de gestão rural para organizar animais, água, setores e atividades de pequenas propriedades rurais." />
     <meta property="og:url" content="https://www.hydraagro.sbs/" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Hydra Agro" />
-    <meta name="twitter:description" content="Tecnologia rural para rebanho, equipe e operações da propriedade." />
+    <meta name="twitter:title" content="Hydra Agro | Gestão Rural, Animais e Água" />
+    <meta name="twitter:description" content="Hydra Agro é um aplicativo de gestão rural para organizar animais, água, setores e atividades de pequenas propriedades rurais." />
 
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Hydra Agro",
-        "url": "https://www.hydraagro.sbs/",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Web, Android",
-        "description": "Tecnologia rural para rebanho, equipe e operações da propriedade."
-      }
+    <script id="hydra-seo-schema" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.hydraagro.sbs/#website",
+      "name": "Hydra Agro",
+      "url": "https://www.hydraagro.sbs/",
+      "inLanguage": "pt-BR"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Hydra Agro",
+      "url": "https://www.hydraagro.sbs/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, Android",
+      "description": "Hydra Agro é um aplicativo de gestão rural para organizar animais, água, setores e atividades de pequenas propriedades rurais.",
+      "featureList": [
+        "Cadastro e acompanhamento de animais",
+        "Organização da propriedade e setores",
+        "Gestão de atividades rurais",
+        "Registros de água",
+        "Identificação animal com Hydra Tag"
+      ]
+    }
+  ]
+}
     </script>
 
     <style>
@@ -57,7 +76,7 @@
 
     <link rel="stylesheet" href="/src/app-entry.css?v=app-entry-23" />
 
-    <title>Hydra Agro</title>
+    <title>Hydra Agro | Gestão Rural, Animais e Água</title>
   </head>
   <body>
     <div id="root"></div>

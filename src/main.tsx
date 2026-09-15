@@ -1,4 +1,5 @@
 import React from "react";
+import { PublicProjectLink } from "./public/welcome";
 import ReactDOM from "react-dom/client";
 import { Capacitor } from "@capacitor/core";
 import "@fontsource/manrope/latin-400.css";
@@ -105,6 +106,7 @@ function DesktopPhonePresentation() {
         </div>
       </div>
       <div aria-hidden="true" />
+      <PublicProjectLink desktop />
     </main>
   );
 }

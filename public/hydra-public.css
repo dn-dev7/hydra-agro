@@ -1,0 +1,19 @@
+.hydra-public-link { order: 4; margin-top: 16px; font-size: 14px; line-height: 1.5; }
+.hydra-public-link a { color: #e6eee7; text-underline-offset: 4px; padding: 8px; display: inline-block; }
+.hydra-public-link a:focus-visible, .hydra-public-page a:focus-visible { outline: 2px solid #f39a48; outline-offset: 4px; }
+.hydra-public-link-desktop { position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 30; margin: 0; }
+.hydra-public-page { background: #f8f6ef; color: #0b3425; min-height: 100vh; font-family: Manrope, system-ui, sans-serif; font-size: 16px; line-height: 1.7; }
+.hydra-public-page header, .hydra-public-page main, .hydra-public-page footer { max-width: 880px; margin: auto; padding: 24px; }
+.hydra-public-page header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid #d9e0d6; }
+.hydra-public-page a { color: #174c36; text-underline-offset: 4px; }
+.hydra-public-brand { font-size: 24px; font-weight: 800; text-decoration: none; }
+.hydra-public-page nav { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; }
+.hydra-public-page nav a { padding-block: 8px; }
+.hydra-public-page nav a[aria-current] { font-weight: 800; }
+.hydra-public-page h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.2; margin: 24px 0; letter-spacing: -.035em; }
+.hydra-public-page h2 { font-size: 22px; line-height: 1.3; margin: 0 0 12px; }
+.hydra-public-page p { margin: 0 0 16px; }
+.hydra-public-intro { font-size: 18px; }
+.hydra-public-page section { padding: 28px 0 12px; border-top: 1px solid #d9e0d6; }
+.hydra-public-open { display: inline-block; margin-top: 24px; padding: 12px 20px; border-radius: 17px; background: #f39a48; color: #123626; font-weight: 750; text-decoration: none; }
+.hydra-public-page footer { font-size: 14px; }
