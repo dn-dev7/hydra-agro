@@ -9,6 +9,7 @@ const downloadStyles = readFileSync(resolve(root, "public/download-polish.css"),
 const prerender = readFileSync(resolve(root, "scripts/prerender-public.mjs"), "utf8");
 const publicRender = readFileSync(resolve(root, "src/public/prerender.tsx"), "utf8");
 const welcome = readFileSync(resolve(root, "src/public/welcome.tsx"), "utf8");
+const platformChoice = readFileSync(resolve(root, "src/components/platform-choice-dialog.tsx"), "utf8");
 const vercel = readFileSync(resolve(root, "vercel.json"), "utf8");
 
 describe("download oficial do Android", () => {
@@ -25,12 +26,15 @@ describe("download oficial do Android", () => {
     expect(releaseScript).toContain("A primeira versão Android oficial ainda não foi publicada.");
   });
 
-  it("publica o script, a rota e o acesso pela landing page", () => {
+  it("publica a rota e oferece Android ou Web somente depois da autenticação", () => {
     expect(prerender).toContain('/download-release.js');
     expect(prerender).toContain('/download-polish.css');
     expect(vercel).toContain('"source": "/download"');
     expect(vercel).toContain('"destination": "/download/index.html"');
-    expect(welcome).toContain('href="/download"');
+    expect(platformChoice).toContain('window.location.assign("/download")');
+    expect(platformChoice).toContain("Continuar na Web");
+    expect(platformChoice).toContain("Adicionar à Tela de Início");
+    expect(welcome).not.toContain('href="/download"');
   });
 
   it("mantém o download limpo e sem link de releases na interface", () => {
