@@ -63,7 +63,7 @@ function DownloadCard() {
   </section>;
 }
 
-function DownloadContent(page: typeof pages[number]) {
+function DownloadContent({ page }: { page: typeof pages[number] }) {
   const install = page.sections[0];
   const supporting = page.sections.slice(1);
   return <>
