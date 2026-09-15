@@ -1,57 +1,68 @@
-name: Security Audit
+name: Hydra Agro • Security Audit
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
+    paths:
+      - '.github/workflows/security-audit.yml'
+      - 'src/**'
+      - 'api/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.env.example'
   pull_request:
     branches: [main]
   schedule:
-    - cron: "17 6 * * 1"
-  workflow_dispatch:
+    - cron: '17 6 * * 1'
 
 permissions:
   contents: read
 
 concurrency:
-  group: security-audit-${{ github.ref }}
+  group: hydra-security-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  verify:
+  audit:
+    name: Verificar segurança e dependências
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
     steps:
-      - name: Checkout
+      - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Node 22
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: '22'
           cache: npm
 
-      - name: Python 3.12
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
-      - name: Install
-        run: npm install --no-audit --no-fund
+      - name: Instalar dependências
+        run: npm ci --no-audit --no-fund
 
-      - name: Typecheck
+      - name: Verificar TypeScript
         run: npm run lint
 
-      - name: Tests
+      - name: Executar testes web
         run: npm test
 
-      - name: Build
+      - name: Compilar aplicação
         run: npm run build
 
-      - name: Validate Python backend
+      - name: Validar backend Python
         run: python -m compileall -q api tests/python
 
-      - name: Python tests
-        run: python -m unittest discover -s tests/python -p "test_*.py"
+      - name: Executar testes Python
+        run: python -m unittest discover -s tests/python -p 'test_*.py'
 
-      - name: Dependency audit
+      - name: Auditar dependências
         run: npm audit --audit-level=high
