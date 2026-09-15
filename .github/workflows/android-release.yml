@@ -1,0 +1,176 @@
+name: Hydra Agro • Release Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão para publicar, por exemplo 1.3.0'
+        required: true
+        type: string
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hydra-android-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Gerar e publicar APK oficial
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Definir versão
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            VERSION='${{ inputs.version }}'
+          else
+            VERSION='${GITHUB_REF_NAME#v}'
+          fi
+
+          VERSION="${VERSION#v}"
+
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Versão inválida: $VERSION"
+            echo "Use o formato MAJOR.MINOR.PATCH, por exemplo 1.3.0."
+            exit 1
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          VERSION_CODE=$((MAJOR * 1000000 + MINOR * 1000 + PATCH))
+          TAG="v${VERSION}"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "apk_name=HydraAgro-${TAG}.apk" >> "$GITHUB_OUTPUT"
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar dependências
+        run: npm ci --no-audit --no-fund
+
+      - name: Preparar configuração do backend
+        shell: bash
+        env:
+          SECRET_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SECRET_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -n "$SECRET_SUPABASE_URL" ] && [ -n "$SECRET_SUPABASE_KEY" ]; then
+            printf 'VITE_SUPABASE_URL=%s\nVITE_SUPABASE_PUBLISHABLE_KEY=%s\n' \
+              "$SECRET_SUPABASE_URL" "$SECRET_SUPABASE_KEY" > .env.production
+          else
+            cp .env.example .env.production
+          fi
+          npm run env:check
+
+      - name: Verificar projeto
+        run: |
+          npm run lint
+          npm test
+          npm run build
+
+      - name: Sincronizar Android
+        run: npx cap sync android
+
+      - name: Validar secrets de assinatura
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for VALUE in "$KEYSTORE_BASE64" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD"; do
+            if [ -z "$VALUE" ]; then
+              echo "Os secrets de assinatura Android ainda não estão configurados."
+              echo "Necessários: ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS e ANDROID_KEY_PASSWORD."
+              exit 1
+            fi
+          done
+
+      - name: Restaurar keystore
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/hydra-agro-release.jks"
+          test -s "$RUNNER_TEMP/hydra-agro-release.jks"
+
+      - name: Gerar APK oficial assinado
+        working-directory: android
+        env:
+          HYDRA_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          HYDRA_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          HYDRA_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease \
+            -PHYDRA_VERSION_NAME='${{ steps.version.outputs.version }}' \
+            -PHYDRA_VERSION_CODE='${{ steps.version.outputs.version_code }}' \
+            -PHYDRA_KEYSTORE_FILE="$RUNNER_TEMP/hydra-agro-release.jks" \
+            -PHYDRA_KEYSTORE_PASSWORD="$HYDRA_KEYSTORE_PASSWORD" \
+            -PHYDRA_KEY_ALIAS="$HYDRA_KEY_ALIAS" \
+            -PHYDRA_KEY_PASSWORD="$HYDRA_KEY_PASSWORD" \
+            --no-daemon --stacktrace
+
+      - name: Preparar download
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK='android/app/build/outputs/apk/release/app-release.apk'
+          test -f "$APK"
+          mkdir -p release-output
+          cp "$APK" 'release-output/${{ steps.version.outputs.apk_name }}'
+          cd release-output
+          sha256sum '${{ steps.version.outputs.apk_name }}' > '${{ steps.version.outputs.apk_name }}.sha256'
+
+      - name: Criar GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Hydra Agro ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          generate_release_notes: true
+          make_latest: true
+          files: |
+            release-output/${{ steps.version.outputs.apk_name }}
+            release-output/${{ steps.version.outputs.apk_name }}.sha256
+
+      - name: Resumo da publicação
+        shell: bash
+        run: |
+          {
+            echo '## Hydra Agro publicado'
+            echo
+            echo '- Versão: `${{ steps.version.outputs.tag }}`'
+            echo '- APK: `${{ steps.version.outputs.apk_name }}`'
+            echo '- Release marcada como latest'
+          } >> "$GITHUB_STEP_SUMMARY"
