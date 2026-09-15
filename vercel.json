@@ -23,6 +23,10 @@
       "destination": "/gestao-de-agua/index.html"
     },
     {
+      "source": "/download",
+      "destination": "/download/index.html"
+    },
+    {
       "source": "/((?!api/|sitemap\\.xml$|robots\\.txt$|manifest\\.webmanifest$|sw\\.js$|.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
