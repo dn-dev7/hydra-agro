@@ -1,0 +1,6 @@
+# Apenas para wrangler dev. Copie para .dev.vars e preencha localmente.
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sua-chave-publicavel
+# Opcional: sem esta chave, o assistente mantém a resposta local do app.
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.6

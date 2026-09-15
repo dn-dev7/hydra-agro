@@ -15,3 +15,7 @@ capacitor.config.d.ts
 vite.config.js
 vite.config.d.ts
 .DS_Store
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
