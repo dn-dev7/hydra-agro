@@ -6,7 +6,22 @@ Este fluxo publica um APK assinado no GitHub Releases e faz a página `/download
 
 A chave Android deve ser criada uma única vez e guardada em local seguro. Não envie o arquivo `.jks`, senhas ou o conteúdo em Base64 para commits, issues, chats públicos ou arquivos do projeto.
 
-No Linux, com Java instalado:
+### Sem terminal, usando Android Studio
+
+1. Abra **Build → Generate Signed Bundle / APK**.
+2. Escolha **APK**.
+3. Clique em **Create new...**.
+4. Salve como `hydra-agro-release.jks`.
+5. Crie e guarde a senha do keystore.
+6. Use `hydraagro` como alias.
+7. Crie e guarde a senha da chave.
+8. Use uma validade longa e conclua a criação.
+
+Guarde um backup seguro de `hydra-agro-release.jks`. Perder essa chave pode impedir atualizações compatíveis com instalações anteriores.
+
+### Alternativa via Linux
+
+Com Java instalado:
 
 ```bash
 keytool -genkeypair \
@@ -18,23 +33,31 @@ keytool -genkeypair \
   -validity 10000
 ```
 
-Use senhas fortes e guarde-as junto com um backup do arquivo `hydra-agro-release.jks`. Perder essa chave pode impedir atualizações compatíveis com instalações anteriores.
-
 ## 2. Converter a chave para Base64
 
-No Linux:
+### Sem terminal
+
+Abra:
+
+`https://www.hydraagro.sbs/tools/keystore`
+
+Selecione `hydra-agro-release.jks` e clique em **Copiar Base64**. A ferramenta lê o arquivo somente no navegador, não faz upload, não usa API e não salva o resultado no armazenamento do site.
+
+Depois de copiar, feche a página e cole o conteúdo apenas no secret `ANDROID_KEYSTORE_BASE64` do GitHub.
+
+### Alternativa via Linux
 
 ```bash
 base64 -w 0 hydra-agro-release.jks > hydra-agro-release.base64.txt
 ```
 
-O conteúdo desse arquivo é secreto. Ele serve apenas para cadastrar o secret do GitHub e depois pode ser removido do computador se o `.jks` original estiver guardado com segurança.
+O conteúdo em Base64 continua sendo secreto. Nunca o publique em código, commit, issue, comentário ou arquivo compartilhado.
 
 ## 3. Cadastrar os GitHub Actions Secrets
 
 No repositório, abra **Settings → Secrets and variables → Actions → New repository secret** e crie:
 
-- `ANDROID_KEYSTORE_BASE64`: conteúdo completo de `hydra-agro-release.base64.txt`;
+- `ANDROID_KEYSTORE_BASE64`: conteúdo completo em Base64;
 - `ANDROID_KEYSTORE_PASSWORD`: senha do keystore;
 - `ANDROID_KEY_ALIAS`: alias usado na criação da chave, por exemplo `hydraagro`;
 - `ANDROID_KEY_PASSWORD`: senha da chave.
