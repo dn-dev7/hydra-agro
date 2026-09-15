@@ -1,22 +1,25 @@
 (() => {
   const status = document.getElementById("hydra-download-status");
   const meta = document.getElementById("hydra-download-meta");
+  const versionNode = document.getElementById("hydra-download-version");
+  const sizeNode = document.getElementById("hydra-download-size");
+  const dateNode = document.getElementById("hydra-download-date");
   const apkLink = document.getElementById("hydra-download-apk");
   const checksumLink = document.getElementById("hydra-download-checksum");
 
-  if (!status || !meta || !(apkLink instanceof HTMLAnchorElement) || !(checksumLink instanceof HTMLAnchorElement)) return;
+  if (!status || !meta || !versionNode || !sizeNode || !dateNode || !(apkLink instanceof HTMLAnchorElement) || !(checksumLink instanceof HTMLAnchorElement)) return;
 
   const formatSize = (bytes) => {
-    if (!Number.isFinite(bytes) || bytes <= 0) return "";
+    if (!Number.isFinite(bytes) || bytes <= 0) return "—";
     const mb = bytes / (1024 * 1024);
     return `${mb.toFixed(mb >= 10 ? 0 : 1)} MB`;
   };
 
   const formatDate = (value) => {
-    if (!value) return "";
+    if (!value) return "—";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "";
-    return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "long", year: "numeric" }).format(date);
+    if (Number.isNaN(date.getTime())) return "—";
+    return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(date).replace(" de ", " ");
   };
 
   fetch("https://api.github.com/repos/dnmtfe3-cpu/hydra-agr/releases/latest", {
@@ -32,14 +35,17 @@
       if (!apk?.browser_download_url) throw new Error("Release sem APK oficial");
 
       const checksum = assets.find((asset) => asset?.name === `${apk.name}.sha256`);
-      const version = typeof release.tag_name === "string" ? release.tag_name : "versão atual";
+      const version = typeof release.tag_name === "string" ? release.tag_name : "Atual";
       const published = formatDate(release.published_at);
       const size = formatSize(Number(apk.size));
 
       apkLink.href = apk.browser_download_url;
       apkLink.removeAttribute("hidden");
-      status.textContent = `Disponível: ${version}`;
-      meta.textContent = [size, published ? `publicado em ${published}` : ""].filter(Boolean).join(" · ");
+      status.textContent = "Versão oficial pronta para instalar";
+      versionNode.textContent = version;
+      sizeNode.textContent = size;
+      dateNode.textContent = published;
+      meta.textContent = `Arquivo oficial ${apk.name}`;
 
       if (checksum?.browser_download_url) {
         checksumLink.href = checksum.browser_download_url;
@@ -48,6 +54,9 @@
     })
     .catch(() => {
       status.textContent = "A primeira versão Android oficial ainda não foi publicada.";
+      versionNode.textContent = "—";
+      sizeNode.textContent = "—";
+      dateNode.textContent = "—";
       meta.textContent = "Assim que uma Release assinada for publicada, o botão de download aparecerá aqui automaticamente.";
     });
 })();
