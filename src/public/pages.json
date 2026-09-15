@@ -59,12 +59,12 @@
     "title": "Baixar Hydra Agro para Android | APK oficial",
     "heading": "Baixe o Hydra Agro",
     "description": "Baixe a versão oficial mais recente do Hydra Agro para Android e veja o passo a passo de instalação.",
-    "intro": "Tenha o Hydra Agro instalado no seu Android ou continue usando a versão Web. A página sempre oferece a versão oficial mais recente do aplicativo.",
+    "intro": "Escolha como quer usar o Hydra Agro: instale no Android ou entre direto pela versão Web.",
     "sections": [
       { "heading": "Como instalar no Android", "text": "Baixe o APK oficial, abra o arquivo no celular e conclua a instalação. Se o Android solicitar permissão para instalar por essa origem, autorize somente o navegador ou gerenciador usado para este download." },
-      { "heading": "Atualizações automáticas na página", "text": "Sempre que uma nova versão oficial for publicada, o botão desta página passa a apontar para o APK mais recente. O endereço de download do Hydra Agro continua o mesmo." },
+      { "heading": "Atualizações", "text": "Quando uma nova versão oficial for publicada, o botão desta página passa automaticamente a oferecer o APK mais recente. O endereço desta página não muda." },
       { "heading": "iPhone e iPad", "text": "No iPhone e iPad não existe APK. Use o Hydra Agro pelo Safari e, se quiser acesso mais rápido, escolha Compartilhar e depois Adicionar à Tela de Início." },
-      { "heading": "Segurança do download", "text": "Baixe o aplicativo somente por esta página ou pelas Releases oficiais do Hydra Agro. Cada versão também possui um SHA-256 para conferência da integridade do arquivo." }
+      { "heading": "Segurança do download", "text": "Baixe o aplicativo somente por esta página. Cada versão também possui um SHA-256 para conferir a integridade do arquivo." }
     ]
   }
 ]
