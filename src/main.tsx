@@ -1,5 +1,4 @@
 import React from "react";
-import { PublicProjectLink } from "./public/welcome";
 import ReactDOM from "react-dom/client";
 import { Capacitor } from "@capacitor/core";
 import "@fontsource/manrope/latin-400.css";
@@ -41,7 +40,6 @@ import "./seo-runtime";
 import "./auth-no-carousel.css";
 import "./hydra-dark-final.css";
 import "./auth-landing-native.css";
-import "./auth-public-links-polish.css";
 import "./auth-signup-native.css";
 import "./ui-premium-polish.css";
 import "./native-screen-cleanup.css";
@@ -53,6 +51,7 @@ import "./maintenance-runtime";
 import "./interface-priority-polish.css";
 import "./features/home/home-property-hero-polish.css";
 import { HydraAppShell } from "./components/hydra-app-shell";
+import { PlatformChoiceDialog } from "./components/platform-choice-dialog";
 import { PublicTagLookup } from "./features/herd/public-tag-lookup";
 import { NotFoundScreen } from "./features/system/not-found-screen";
 import { setupPushNotifications } from "./services/push-notifications";
@@ -87,6 +86,10 @@ const desktopPhoneMode =
   !standalonePublicMode &&
   !notFoundMode;
 
+function HydraWebApp() {
+  return <><HydraAppShell /><PlatformChoiceDialog /></>;
+}
+
 function DesktopPhonePresentation() {
   const mobileUrl = typeof window !== "undefined" ? window.location.href : "/";
 
@@ -107,7 +110,6 @@ function DesktopPhonePresentation() {
         </div>
       </div>
       <div aria-hidden="true" />
-      <PublicProjectLink desktop />
     </main>
   );
 }
@@ -122,7 +124,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       ) : desktopPhoneMode ? (
         <DesktopPhonePresentation />
       ) : (
-        <HydraAppShell />
+        <HydraWebApp />
       )
     )}
   </React.StrictMode>,
