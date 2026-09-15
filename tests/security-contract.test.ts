@@ -6,7 +6,8 @@ const root = resolve(process.cwd());
 const migration = readFileSync(resolve(root, "supabase/migrations/202608150001_hydra_agro.sql"), "utf8");
 const capacitor = readFileSync(resolve(root, "capacitor.config.ts"), "utf8");
 const manifest = readFileSync(resolve(root, "android/app/src/main/AndroidManifest.xml"), "utf8");
-const workflow = readFileSync(resolve(root, ".github/workflows/android-apk.yml"), "utf8");
+const androidCi = readFileSync(resolve(root, ".github/workflows/android-ci.yml"), "utf8");
+const androidRelease = readFileSync(resolve(root, ".github/workflows/android-release.yml"), "utf8");
 
 describe("contratos de segurança e empacotamento", () => {
   it("atribui o dono no banco e não no frontend", () => {
@@ -32,11 +33,19 @@ describe("contratos de segurança e empacotamento", () => {
     ]) expect(migration).toContain(`public.${table}`);
   });
 
-  it("configura NFC opcional e o artifact solicitado", () => {
+  it("configura NFC opcional e mantém CI e release Android locais", () => {
     expect(manifest).toContain("android.permission.NFC");
     expect(manifest).toContain('android.hardware.nfc" android:required="false"');
-    expect(workflow).toContain("name: hydra-agro-apk");
-    expect(workflow).toContain("app-debug.apk");
-    expect(workflow).not.toContain("HYDRA_APP_URL");
+
+    expect(androidCi).toContain("Hydra Agro • Android CI");
+    expect(androidCi).toContain("app-debug.apk");
+    expect(androidCi).toContain("HydraAgro-CI-");
+    expect(androidCi).not.toContain("HYDRA_APP_URL");
+
+    expect(androidRelease).toContain("Hydra Agro • Release Android");
+    expect(androidRelease).toContain("assembleRelease");
+    expect(androidRelease).toContain("HydraAgro-${TAG}.apk");
+    expect(androidRelease).toContain("make_latest: true");
+    expect(androidRelease).not.toContain("HYDRA_APP_URL");
   });
 });
