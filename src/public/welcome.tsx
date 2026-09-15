@@ -2,7 +2,7 @@ import { UsersRound } from "lucide-react";
 import { HydraMark } from "../components/brand";
 
 export function PublicProjectLink({ desktop = false }: { desktop?: boolean }) {
-  return <nav className={desktop ? "hydra-public-link hydra-public-link-desktop" : "hydra-public-link"} aria-label="Sobre o projeto"><a href="/sobre" target={desktop ? "_self" : "_top"}>Conheça o Hydra Agro</a></nav>;
+  return <nav className={desktop ? "hydra-public-link hydra-public-link-desktop" : "hydra-public-link"} aria-label="Sobre o projeto"><a href="/sobre" target={desktop ? "_self" : "_top"}>Conheça o Hydra Agro</a><a href="/download" target={desktop ? "_self" : "_top"}>Baixar para Android</a></nav>;
 }
 
 export function Welcome({ onEnter, onSignup, onStaff }: { onEnter?: () => void; onSignup?: () => void; onStaff?: () => void }) {
