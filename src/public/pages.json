@@ -52,5 +52,19 @@
       { "heading": "Problemas de abastecimento", "text": "Registros de falta de água e vazamentos ajudam a documentar quando e onde um problema foi percebido. O aplicativo não executa reparos nem garante o reabastecimento; as providências dependem dos responsáveis pelo serviço." },
       { "heading": "Dados para apoiar decisões", "text": "Informações de água, clima e atividades podem apoiar o planejamento da rotina. A utilidade desse acompanhamento depende da frequência e da qualidade dos registros preenchidos pelo produtor." }
     ]
+  },
+  {
+    "path": "/download",
+    "label": "Baixar Android",
+    "title": "Baixar Hydra Agro para Android | APK oficial",
+    "heading": "Hydra Agro para Android",
+    "description": "Baixe a versão oficial mais recente do Hydra Agro para Android e veja o passo a passo de instalação.",
+    "intro": "Esta página procura automaticamente a versão oficial mais recente publicada pelo projeto. O APK só é oferecido quando existe uma GitHub Release marcada como mais recente.",
+    "sections": [
+      { "heading": "Como instalar no Android", "text": "Toque em Baixar APK oficial. Quando o download terminar, abra o arquivo. Se o Android pedir autorização para instalar aplicativos dessa origem, leia o aviso e autorize apenas o navegador ou gerenciador usado neste download oficial. Conclua a instalação e abra o Hydra Agro." },
+      { "heading": "Atualizações", "text": "Quando uma nova versão oficial for publicada, esta página passa a apontar automaticamente para o APK mais recente. Você não precisa procurar arquivos em pastas ou links antigos." },
+      { "heading": "iPhone e iPad", "text": "No iPhone e iPad não existe APK. Use a versão Web do Hydra Agro no Safari. Se quiser um atalho, use Compartilhar e Adicionar à Tela de Início." },
+      { "heading": "Segurança do download", "text": "Use somente o botão desta página ou a Release oficial do repositório Hydra Agro. Cada publicação também inclui um arquivo SHA-256 para quem quiser conferir a integridade do APK." }
+    ]
   }
 ]

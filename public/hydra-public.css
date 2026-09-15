@@ -17,3 +17,18 @@
 .hydra-public-page section { padding: 28px 0 12px; border-top: 1px solid #d9e0d6; }
 .hydra-public-open { display: inline-block; margin-top: 24px; padding: 12px 20px; border-radius: 17px; background: #f39a48; color: #123626; font-weight: 750; text-decoration: none; }
 .hydra-public-page footer { font-size: 14px; }
+.hydra-download-card { margin: 30px 0 34px; padding: clamp(22px, 5vw, 34px) !important; border: 1px solid #cbd8ce !important; border-radius: 28px; background: #fffdf8; box-shadow: 0 18px 50px rgba(21, 68, 49, .08); }
+.hydra-download-card h2 { font-size: clamp(24px, 4vw, 30px); }
+.hydra-download-eyebrow { margin-bottom: 8px !important; font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #5e735f; }
+.hydra-download-status { font-size: 18px; font-weight: 700; }
+.hydra-download-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.hydra-download-primary { margin-top: 0; }
+.hydra-download-secondary { display: inline-flex; align-items: center; min-height: 48px; padding: 10px 15px; border: 1px solid #cbd8ce; border-radius: 15px; background: #f4f6f0; font-weight: 700; text-decoration: none; }
+.hydra-download-meta { margin: 14px 0 0 !important; color: #5d6b61; font-size: 14px; }
+[hidden] { display: none !important; }
+@media (max-width: 620px) {
+  .hydra-public-page header { align-items: flex-start; }
+  .hydra-public-page nav { gap: 2px 12px; }
+  .hydra-download-actions { align-items: stretch; flex-direction: column; }
+  .hydra-download-primary, .hydra-download-secondary { justify-content: center; text-align: center; }
+}
