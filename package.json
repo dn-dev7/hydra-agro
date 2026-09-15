@@ -23,7 +23,10 @@
     "ios:setup": "node scripts/setup-ios-nfc.mjs",
     "ios:sync": "node scripts/setup-ios-nfc.mjs",
     "ios:open": "npx cap open ios",
-    "verify": "npm run lint && npm test && npm run build"
+    "verify": "npm run lint && npm test && npm run build",
+    "cloudflare:dev": "npm run build && wrangler dev",
+    "cloudflare:check": "node --test cloudflare/worker.check.mjs && wrangler deploy --dry-run",
+    "cloudflare:deploy": "npm run env:check && npm run build && wrangler deploy"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
@@ -62,7 +65,8 @@
     "jsdom": "^28.0.0",
     "typescript": "^5.9.3",
     "vite": "^8.0.13",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "wrangler": "4.131.2"
   },
   "overrides": {
     "@xmldom/xmldom": "0.9.12",
