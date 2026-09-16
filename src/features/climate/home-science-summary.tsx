@@ -34,7 +34,7 @@ function ScienceShortcut({ icon, label, value, detail, onClick, variant }: Short
   );
 }
 
-export function HomeScienceSummary({ account, onOpen, compact = false }: { account: HydraAccount; onOpen: () => void; compact?: boolean }) {
+export function HomeScienceSummary({ account, onOpen }: { account: HydraAccount; onOpen: () => void }) {
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function HomeScienceSummary({ account, onOpen, compact = false }: { accou
   const water = weather ? waterSituation(account, weather) : null;
 
   return (
-    <section className={`home-science-summary${compact ? " rural-climate-summary" : ""}`} aria-label={compact ? "Clima da região" : "Atalhos de clima, animais e água"}>
+    <section className="home-science-summary" aria-label="Atalhos de clima, animais e água">
       <ScienceShortcut
         variant="climate"
         icon={<CloudSun size={18} />}
@@ -69,20 +69,20 @@ export function HomeScienceSummary({ account, onOpen, compact = false }: { accou
         detail={weather ? (weather.rainChance >= 60 ? "Pode chover" : "Ver previsão") : "Ver previsão"}
         onClick={() => open("climate")}
       />
-      {!compact && <ScienceShortcut
+      <ScienceShortcut
         icon={<ThermometerSun size={18} />}
         label="ANIMAIS"
         value={comfort?.status ?? "Rebanho"}
         detail="Conforto térmico"
         onClick={() => open("animals")}
-      />}
-      {!compact && <ScienceShortcut
+      />
+      <ScienceShortcut
         icon={<Droplets size={18} />}
         label="ÁGUA"
         value={water?.status ?? "Situação"}
         detail="Acompanhar água"
         onClick={() => open("water")}
-      />}
+      />
     </section>
   );
 }

@@ -47,7 +47,6 @@ export function SplashBrand() {
     <div className="splash-brand" aria-label="Carregando Hydra Agro">
       <span className="splash-expansion" aria-hidden="true" />
       <span className="splash-mark-wrap"><HydraMark className="splash-mark" /></span>
-      <strong className="splash-rural-name">Hydra Agro</strong>
     </div>
   );
 }

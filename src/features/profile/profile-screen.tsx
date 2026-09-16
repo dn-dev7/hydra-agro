@@ -277,19 +277,6 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
         </div>
       </section>
 
-      <section className="profile-group">
-        <span className="group-label">FERRAMENTAS DA PROPRIEDADE</span>
-        <div className="profile-menu-card">
-          <MenuRow icon={<Sprout size={21} />} title="Setores e ocorrências" onClick={() => navigate("monitor")} />
-          <MenuRow icon={<ShieldCheck size={21} />} title="Hydra Tag" subtitle="Identificação dos animais" onClick={() => navigate("nfc")} />
-          <MenuRow icon={<FileText size={21} />} title="Relatórios" onClick={() => navigate("today")} />
-          <MenuRow icon={<FileText size={21} />} title="Histórico da propriedade" onClick={() => navigate("history")} />
-          <MenuRow icon={<Sprout size={21} />} title="Caderno da produção" onClick={() => navigate("production")} />
-          <MenuRow icon={<CircleHelp size={21} />} title="Hydra Assistente" onClick={() => navigate("assistant")} />
-          <MenuRow icon={<CheckCircle2 size={21} />} title="Missões" onClick={() => navigate("challenges")} />
-        </div>
-      </section>
-
       <button className="logout-button" onClick={() => setLogoutConfirm(true)}><LogOut size={19} /> Sair desta conta</button>
       <p className="profile-version">Hydra Agro · versão {__HYDRA_VERSION__} · {__HYDRA_BUILD__}</p>
 

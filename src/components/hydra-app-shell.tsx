@@ -14,9 +14,9 @@ const THEME_KEY = "hydra-agro.theme";
 
 function savedTheme(): ThemeMode {
   try {
-    return window.localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
+    return window.localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light";
   } catch {
-    return "dark";
+    return "light";
   }
 }
 
@@ -87,7 +87,7 @@ export function HydraAppShell() {
 
         const allowed = ["moderator", "admin", "owner"].includes(account.role);
         setCanUseDarkTheme(allowed);
-        setTheme(allowed ? savedTheme() : "dark");
+        setTheme(allowed ? savedTheme() : "light");
         if (!allowed) window.localStorage.removeItem(THEME_KEY);
       } catch {
         if (active && current === revision) {
