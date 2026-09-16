@@ -4,9 +4,10 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const FALLBACK_SUPABASE_URL = "https://gfwypccosftpchpbdiir.supabase.co";
 const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uL6O0N4LwLykHFprsFjm6A_Z8UHxj2I";
+const isTestMode = import.meta.env.MODE === "test";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || FALLBACK_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim() || FALLBACK_SUPABASE_PUBLISHABLE_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || (isTestMode ? "" : FALLBACK_SUPABASE_URL);
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim() || (isTestMode ? "" : FALLBACK_SUPABASE_PUBLISHABLE_KEY);
 
 export const backendConfigured =
   /^https:\/\/.+\.supabase\.co$/.test(supabaseUrl) &&
