@@ -3,8 +3,9 @@ import { EasyModeSetting } from "./features/easy-mode/easy-mode-setting";
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
-import { ClipboardCheck, Beef as Cow, History, Home, MapPin, Nfc, Plus, Send, UserRound, UsersRound, X } from "lucide-react";
+import { ClipboardCheck, Beef as Cow, Droplets, Menu, History, Home, MapPin, Nfc, Plus, Send, UserRound, UsersRound, X } from "lucide-react";
 import { SplashBrand } from "./components/brand";
+import { RuralViewport } from "./components/rural-viewport";
 import { requestCloseTopOverlay, useAppOverlay, useModalNavigation } from "./components/modal-system";
 import { BackendSetupScreen, BannedScreen, PasswordRecoveryScreen, SyncBanner } from "./components/system-state";
 import { AppToastRegion } from "./components/ui";
@@ -41,10 +42,10 @@ type NavTab = { id: AppRoute; label: string; icon: typeof Home };
 
 const ownerMainTabs: NavTab[] = [
   { id: "home", label: "Início", icon: Home },
-  { id: "community", label: "Comunidade", icon: UsersRound },
-  { id: "nfc", label: "NFC", icon: Nfc },
-  { id: "herd", label: "Rebanho", icon: Cow },
-  { id: "profile", label: "Perfil", icon: UserRound },
+  { id: "herd", label: "Animais", icon: Cow },
+  { id: "water", label: "Água", icon: Droplets },
+  { id: "activities", label: "Tarefas", icon: ClipboardCheck },
+  { id: "profile", label: "Mais", icon: Menu },
 ];
 
 const staffMainTabs: NavTab[] = [
@@ -105,7 +106,7 @@ export default function HydraApp() {
     splashTimer.current = window.setTimeout(() => {
       setSplash(false);
       splashTimer.current = null;
-    }, 3000);
+    }, 900);
     return () => {
       if (splashTimer.current) window.clearTimeout(splashTimer.current);
     };
@@ -350,7 +351,7 @@ export default function HydraApp() {
       return <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} />;
     }
     switch (route) {
-      case "home": return isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
+      case "home": return isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen updateAccount={store.updateAccount} account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
       case "water": return <WaterScreen account={account} updateAccount={store.updateAccount} />;
       case "herd": return <HerdScreen account={account} updateAccount={store.updateAccount} openNfc={openNfc} focusAnimalId={animalToOpen} saveAnimalPhoto={store.saveAnimalPhoto} createRequest={quickIntent?.kind === "animal" ? quickIntent.request : undefined} onRequestHandled={() => setQuickIntent(undefined)} />;
       case "monitor": return <MonitorScreen account={account} updateAccount={store.updateAccount} saveMonitoringPhoto={store.saveMonitoringPhoto} createSectorRequest={quickIntent?.kind === "sector" ? quickIntent.request : undefined} onRequestHandled={() => setQuickIntent(undefined)} />;
@@ -369,26 +370,27 @@ export default function HydraApp() {
       case "climate": return <ClimateScienceScreen account={account} onBack={goBack} navigate={navigate} />;
       case "research": return <ResearchImpactScreen account={account} onBack={goBack} />;
       case "plus": return <PlusScreen account={account} updateAccount={store.updateAccount} onBack={goBack} />;
-      case "admin": return ["moderator", "admin", "owner"].includes(account.role) ? <AdminScreen account={account} onBack={goBack} /> : isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
+      case "admin": return ["moderator", "admin", "owner"].includes(account.role) ? <AdminScreen account={account} onBack={goBack} /> : isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen updateAccount={store.updateAccount} account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
       default: return null;
     }
   }
 
   const activeTab: AppRoute = mainRouteIds.includes(route)
     ? route
-    : !isStaff && (route === "monitor" || route === "property" || route === "plus" || route === "admin") ? "profile"
+    : !isStaff && route !== "climate" ? "profile"
     : "home";
   const activeIndex = mainTabs.findIndex((tab) => tab.id === activeTab);
   const navStyle = { "--active-index": activeIndex } as CSSProperties;
 
   return (
     <EasyModeProvider key={account.id} accountId={account.id}>
-    <main className="app-shell">
+    <main className="app-shell hydra-rural-app">
+      <RuralViewport />
       <div className={`phone-app ${modalNavigationOpen ? "is-overlay-open" : ""}`}>
         <SyncBanner status={store.syncStatus} error={store.lastError} retry={store.retrySync} />
         <div key={route} className={`app-content route-motion-${routeMotion}`}><EasyRoute route={route} onHome={() => navigate("home")} settings={<EasyModeSetting />}><Suspense fallback={<div className="route-loading"><span /><small>Carregando…</small></div>}>{mainContent()}</Suspense></EasyRoute></div>
 
-        <StandardNavigation><nav className={`bottom-nav ${modalNavigationOpen ? "is-hidden" : ""}`} aria-label="Navegação principal" aria-hidden={modalNavigationOpen} style={navStyle}>
+        <StandardNavigation><nav className={`bottom-nav rural-navigation ${modalNavigationOpen ? "is-hidden" : ""}`} aria-label="Navegação principal" aria-hidden={modalNavigationOpen} style={navStyle}>
           <span className="bottom-nav-indicator" aria-hidden="true" />
           {mainTabs.map((tab) => {
             const Icon = tab.icon;

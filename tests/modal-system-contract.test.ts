@@ -14,7 +14,8 @@ describe("contrato global de modais e feedback", () => {
     expect(modalSystem).toContain("overlays.at(-1)");
     expect(app).toContain("useModalNavigation");
     expect(app).toContain("useAppOverlay(quickOpen");
-    expect(app).toContain("bottom-nav ${modalNavigationOpen ? \"is-hidden\"");
+    expect(app).toContain("${modalNavigationOpen ? \"is-hidden\"");
+    expect(app).toContain("aria-hidden={modalNavigationOpen}");
     expect(ui).toContain("useAppOverlay(present, requestClose)");
   });
 
