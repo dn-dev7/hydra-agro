@@ -167,19 +167,31 @@ function installAvatarFallbacks() {
 }
 
 function installSplashVisibilityLock() {
-  let splashSeen = false;
   const html = document.documentElement;
+  const root = document.getElementById("root");
   html.classList.add("hydra-splash-active");
 
   const sync = () => {
     const hasSplash = Boolean(document.querySelector(".splash-screen"));
-    if (hasSplash) splashSeen = true;
-    if (hasSplash || !splashSeen) html.classList.add("hydra-splash-active");
-    else html.classList.remove("hydra-splash-active");
+    const appMounted = Boolean(root?.childNodes.length);
+
+    if (hasSplash) {
+      html.classList.add("hydra-splash-active");
+      return;
+    }
+
+    if (appMounted) html.classList.remove("hydra-splash-active");
   };
 
   const observer = new MutationObserver(sync);
   observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  // Failsafe: um erro de bootstrap ou backend não configurado nunca deve deixar
+  // a página presa para sempre no fundo verde da splash.
+  window.setTimeout(() => {
+    if (!document.querySelector(".splash-screen")) html.classList.remove("hydra-splash-active");
+  }, 4500);
+
   sync();
 }
 
