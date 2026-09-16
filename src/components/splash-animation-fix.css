@@ -1,8 +1,16 @@
-/* Splash: mantém a marca no fundo escuro e faz a tela inteira sumir em fade no final. */
+/* Splash alinhada ao visual preparado no Work.
+   Usa a arte oficial já presente em public/hydra-splash-logo.png e mantém
+   a duração de 3 s esperada pelo HydraApp, sem criar um segundo overlay. */
 html body #root .hydra-root .splash-screen {
-  background: var(--forest-950, #09271b) !important;
+  background: #0d4d34 !important;
+  background-color: #0d4d34 !important;
+  background-image: none !important;
   will-change: opacity;
-  animation: hydra-splash-screen-stable 3s cubic-bezier(.4, 0, .2, 1) both !important;
+  animation: hydra-work-splash-screen 3s linear both !important;
+}
+
+html body #root .hydra-root .splash-brand {
+  pointer-events: none !important;
 }
 
 html body #root .hydra-root .splash-expansion {
@@ -13,39 +21,86 @@ html body #root .hydra-root .splash-expansion {
 }
 
 html body #root .hydra-root .splash-mark-wrap {
+  display: block !important;
+  width: clamp(160px, 46vw, 192px) !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  max-width: none !important;
   opacity: 0;
-  transform: scale(.82);
-  will-change: transform, opacity;
-  animation: hydra-splash-mark-stable 3s cubic-bezier(.65, 0, .22, 1) both !important;
+  transform: scale(.86);
+  transform-origin: 50% 50% !important;
+  background-image: url("/hydra-splash-logo.png?v=web-splash-3") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  will-change: transform, opacity, filter;
+  animation: hydra-work-splash-mark 3s linear both !important;
 }
 
-html body #root .hydra-root .splash-mark {
+/* O PNG acima é a arte usada pelo Work. O símbolo vetorial antigo continua
+   disponível para o restante do produto, mas não aparece mais na splash. */
+html body #root .hydra-root .splash-mark-wrap > .splash-mark {
+  visibility: hidden !important;
+  opacity: 0 !important;
   animation: none !important;
   transform: none !important;
 }
 
-@keyframes hydra-splash-mark-stable {
-  0% { opacity: 0; transform: scale(.82); }
-  14% { opacity: 1; transform: scale(1.03); }
-  24% { opacity: 1; transform: scale(1); }
-  64% { opacity: 1; transform: scale(1); }
-  80% { opacity: .92; transform: scale(1.08); }
-  100% { opacity: 0; transform: scale(1.12); }
+@keyframes hydra-work-splash-mark {
+  0% {
+    opacity: 0;
+    transform: scale(.86);
+    filter: blur(6px);
+    animation-timing-function: cubic-bezier(.16, 1, .3, 1);
+  }
+  20.667% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  76.667% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+    animation-timing-function: cubic-bezier(.64, 0, .8, .25);
+  }
+  93.467% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(9);
+    filter: blur(7px);
+  }
 }
 
-@keyframes hydra-splash-screen-stable {
-  0%, 78% { opacity: 1; visibility: visible; }
-  100% { opacity: 0; visibility: hidden; }
+@keyframes hydra-work-splash-screen {
+  0%, 87.167% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html body #root .hydra-root .splash-screen,
-  html body #root .hydra-root .splash-mark-wrap {
-    animation: none !important;
+  html body #root .hydra-root .splash-screen {
+    animation: hydra-work-splash-reduced 3s linear both !important;
   }
 
   html body #root .hydra-root .splash-mark-wrap {
     opacity: 1;
     transform: none;
+    filter: none;
+    animation: none !important;
   }
+}
+
+@keyframes hydra-work-splash-reduced {
+  0%, 94% { opacity: 1; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; }
 }
