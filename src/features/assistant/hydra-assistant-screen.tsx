@@ -28,6 +28,8 @@ import { supabase } from "../../services/supabase";
 import { animalComfort, waterSituation } from "../../services/climate-science";
 import { loadWeather, type WeatherSnapshot } from "../../services/weather-service";
 
+const NIVO_AGRO_API = import.meta.env.VITE_NIVO_AGRO_API?.trim() || "https://nivostudy.danqxy7.workers.dev/api/hydra/chat";
+
 type Props = { account: HydraAccount; onBack: () => void };
 type AssistantMessage = { id: string; role: "user" | "assistant"; text: string; mode?: "ai" | "local" | "action" };
 type AssistantContext = {
@@ -232,7 +234,7 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
       const parsed = saved ? JSON.parse(saved) as AssistantMessage[] : [];
       if (Array.isArray(parsed) && parsed.length) return parsed.slice(-24);
     } catch { /* armazenamento indisponível */ }
-    return [{ id: "welcome", role: "assistant", text: `Posso consultar os registros de ${account.property.name || "sua propriedade"} e ajudar a encontrar o que precisa de atenção.`, mode: "local" }];
+    return [{ id: "welcome", role: "assistant", text: `Eu sou o Nivo Agro. Posso consultar os registros autorizados de ${account.property.name || "sua propriedade"} e transformar esses dados em respostas simples.`, mode: "local" }];
   });
 
   useEffect(() => {
@@ -285,12 +287,15 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
     try {
       const session = await supabase?.auth.getSession();
       const token = session?.data.session?.access_token;
-      const canUseHostedApi = window.location.protocol === "https:" || window.location.hostname === "localhost";
-      if (token && canUseHostedApi) {
-        const response = await fetch("/api/hydra-assistant", {
+      if (token && navigator.onLine !== false) {
+        const conversationHistory = messages
+          .filter((message) => message.id !== "welcome")
+          .slice(-8)
+          .map((message) => ({ role: message.role, content: message.text }));
+        const response = await fetch(NIVO_AGRO_API, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ question: text, context }),
+          body: JSON.stringify({ question: text, context, messages: conversationHistory }),
         });
         if (response.ok) {
           const data = await response.json() as { answer?: string };
@@ -317,7 +322,7 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
 
   return (
     <div className="screen page-enter assistant-screen assistant-v2">
-      <ScreenHeader eyebrow="ASSISTENTE" title="Hydra" subtitle="Consulte os registros da propriedade e encontre pendências." onBack={onBack} />
+      <ScreenHeader eyebrow="NIVO AGRO" title="Nivo" subtitle="A inteligência do Hydra Agro para entender os dados da propriedade." onBack={onBack} />
 
       <section className="assistant-hero assistant-v2-hero">
         <div className="assistant-v2-hero-top">
@@ -371,7 +376,7 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
 
       <section className="assistant-conversation assistant-v2-conversation">
         <header className="assistant-conversation-head">
-          <div><span className="assistant-online-dot" /><span><strong>Conversa</strong><small>Usa os registros disponíveis na conta</small></span></div>
+          <div><span className="assistant-online-dot" /><span><strong>Nivo Agro</strong><small>Usa somente os registros autorizados desta conta</small></span></div>
           <div className="assistant-chat-tools">
             <button onClick={() => void copyLastAnswer()} aria-label="Copiar última resposta"><Copy size={15} /></button>
             <button onClick={clearConversation} aria-label="Limpar conversa"><Trash2 size={15} /></button>
@@ -384,7 +389,7 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
               {message.role === "assistant" && <span className="assistant-avatar"><Bot size={17} /></span>}
               <div className="assistant-bubble">
                 <p>{message.text}</p>
-                {message.role === "assistant" && <small>{message.mode === "ai" ? "Hydra · online" : message.mode === "action" ? "Ação concluída" : "Hydra · local"}</small>}
+                {message.role === "assistant" && <small>{message.mode === "ai" ? "Nivo Agro · online" : message.mode === "action" ? "Ação concluída" : "Hydra · modo local"}</small>}
               </div>
             </article>
           ))}
@@ -393,13 +398,13 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
         </div>
 
         <form className="assistant-composer" onSubmit={submit}>
-          <div className="assistant-composer-field"><textarea value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Pergunte sobre clima, água, animais, tarefas ou setores…" maxLength={600} rows={2} /><small>{question.length}/600</small></div>
+          <div className="assistant-composer-field"><textarea value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Pergunte ao Nivo sobre água, animais, tarefas, clima ou setores…" maxLength={600} rows={2} /><small>{question.length}/600</small></div>
           <button type="submit" disabled={busy || !question.trim()} aria-label="Enviar pergunta"><Send size={19} /></button>
         </form>
       </section>
 
       <div className="assistant-data-strip"><span><Nfc size={15} /> {context.herd.identified}/{context.herd.total} com NFC</span><span><CheckCircle2 size={15} /> {context.activities.completionRate}% concluídas</span><span><RadioTower size={15} /> {context.monitoring.withOccurrence} ocorrências</span></div>
-      <div className="assistant-boundaries"><ShieldCheck size={18} /><p><strong>Limites do assistente</strong><small>O Hydra ajuda a consultar e organizar registros. Não faz diagnóstico e não indica medicamentos, doses ou tratamento.</small></p></div>
+      <div className="assistant-boundaries"><ShieldCheck size={18} /><p><strong>Nivo Agro com dados reais</strong><small>O Nivo consulta os registros autorizados do Hydra e não inventa dados. Não faz diagnóstico e não indica medicamentos, doses ou tratamento.</small></p></div>
     </div>
   );
 }
