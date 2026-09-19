@@ -1271,3 +1271,131 @@
     margin-bottom: -5px !important;
   }
 }
+
+
+/* DESKTOP SIDE CLIP FIX */
+@media (min-width: 1024px) {
+  html,
+  body,
+  #root,
+  .hydra-root,
+  .hydra-root .app-shell,
+  .hydra-root .phone-app,
+  .hydra-root .app-content {
+    max-width: 100% !important;
+    overflow-x: visible !important;
+  }
+
+  body {
+    overflow-x: auto !important;
+  }
+
+  .hydra-root .phone-app {
+    contain: none !important;
+  }
+
+  /* Mantém a coluna parecida com o mobile, mas com folga real dos dois lados. */
+  .hydra-root .app-content > .screen,
+  .hydra-root .app-content .screen {
+    width: min(calc(100vw - 112px), 820px) !important;
+    max-width: 820px !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    overflow: visible !important;
+  }
+
+  .hydra-root .screen > *,
+  .hydra-root .home-screen > *,
+  .hydra-root .profile-screen > *,
+  .hydra-root .community-screen > *,
+  .hydra-root .screen:has(> .nfc-inline-card) > *,
+  .hydra-root .screen:has(> .water-overview) > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .hydra-root :is(
+    .home-property-map-card,
+    .home-property-map-hitarea,
+    .home-water-savings-card,
+    .property-hero,
+    .home-summary-section,
+    .profile-hero,
+    .profile-social-tabs,
+    .plan-card,
+    .profile-group,
+    .profile-menu-card,
+    .animal-list,
+    .animal-card,
+    .community-tabs,
+    .community-composer,
+    .post-list,
+    .post-card,
+    .water-overview,
+    .content-section,
+    .nfc-inline-card,
+    .herd-care-launch
+  ) {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Elementos do mobile que usam pequenos offsets não podem escapar da coluna. */
+  .hydra-root .home-screen :is(
+    .home-property-map-card,
+    .home-water-savings-card,
+    .property-hero,
+    .home-summary-section,
+    .home-science-summary,
+    .shortcut-row
+  ),
+  .hydra-root .profile-screen :is(
+    .profile-hero,
+    .profile-social-tabs,
+    .plan-card,
+    .profile-group,
+    .logout-button,
+    .profile-version
+  ) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    transform-origin: center !important;
+  }
+
+  .hydra-root .home-property-map-hitarea,
+  .hydra-root .home-water-savings-card,
+  .hydra-root .property-hero,
+  .hydra-root .profile-hero,
+  .hydra-root .profile-menu-card,
+  .hydra-root .animal-card,
+  .hydra-root .post-card {
+    overflow: hidden !important;
+  }
+
+  /* Dock também ganha folga das bordas em notebooks menores. */
+  .hydra-root .phone-app .bottom-nav,
+  html body #root .hydra-root .phone-app nav.bottom-nav.bottom-nav {
+    width: min(600px, calc(100vw - 96px)) !important;
+    max-width: calc(100vw - 96px) !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1120px) {
+  .hydra-root .app-content > .screen,
+  .hydra-root .app-content .screen {
+    width: calc(100vw - 72px) !important;
+    max-width: 790px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav,
+  html body #root .hydra-root .phone-app nav.bottom-nav.bottom-nav {
+    width: min(580px, calc(100vw - 72px)) !important;
+    max-width: calc(100vw - 72px) !important;
+  }
+}
