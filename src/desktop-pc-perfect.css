@@ -630,3 +630,402 @@
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
+
+
+/* DESKTOP V2 REFINEMENT */
+@media (min-width: 1024px) {
+  .hydra-root {
+    --pc-max: 1320px;
+    --pc-surface: rgba(255,255,255,.78);
+    --pc-surface-solid: #fff;
+    --pc-line: rgba(20,72,50,.095);
+    --pc-muted: #728078;
+    --pc-shadow: 0 14px 34px -28px rgba(16,53,37,.48);
+  }
+
+  .hydra-root .app-content > .screen,
+  .hydra-root .app-content .screen {
+    width: min(calc(100% - 80px), var(--pc-max)) !important;
+    max-width: var(--pc-max) !important;
+    padding-top: 36px !important;
+  }
+
+  /* Topo da Home: parece uma área de trabalho, não um celular ampliado. */
+  .hydra-root .home-screen {
+    column-gap: 24px !important;
+    row-gap: 22px !important;
+  }
+
+  .hydra-root .home-screen > .home-brandbar {
+    min-height: 54px !important;
+    padding: 0 0 14px !important;
+    border-bottom: 1px solid var(--pc-line) !important;
+  }
+
+  .hydra-root .home-screen .home-farm-xp {
+    min-height: 40px !important;
+    padding: 0 13px !important;
+    border: 1px solid var(--pc-line) !important;
+    border-radius: 13px !important;
+    background: rgba(255,255,255,.55) !important;
+    box-shadow: none !important;
+  }
+
+  .hydra-root .home-screen .home-brandbar > .icon-button {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .hydra-root .home-screen > .greeting-block {
+    padding: 18px 0 8px !important;
+  }
+
+  .hydra-root .home-screen .greeting-block h1 {
+    max-width: 760px !important;
+    font-size: clamp(2.15rem, 3vw, 3.35rem) !important;
+    line-height: .98 !important;
+    letter-spacing: -.065em !important;
+  }
+
+  .hydra-root .home-screen .greeting-block p {
+    margin-top: 10px !important;
+    font-size: .78rem !important;
+    color: var(--pc-muted) !important;
+  }
+
+  /* Atalhos: faixa leve, ícones soltos como no Nivo. */
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five {
+    align-self: center !important;
+    gap: 4px !important;
+    padding: 7px !important;
+    border: 1px solid var(--pc-line) !important;
+    border-radius: 18px !important;
+    background: rgba(255,255,255,.48) !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five > button {
+    min-height: 64px !important;
+    padding: 8px 6px !important;
+    border: 0 !important;
+    border-radius: 13px !important;
+    background: transparent !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five > button:hover {
+    background: rgba(30,96,66,.055) !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five > button > span:first-child {
+    color: #356b50 !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five > button.production-shortcut > span:first-child {
+    color: #9a611f !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five > button::after {
+    font-size: 8.5px !important;
+    color: #627168 !important;
+  }
+
+  /* Clima / animais / água: uma linha real com 3 indicadores equivalentes. */
+  .hydra-root .home-screen > .home-science-summary {
+    gap: 14px !important;
+    margin: 0 !important;
+  }
+
+  .hydra-root .home-screen .home-science-summary > .home-science-shortcut,
+  .hydra-root .home-screen .home-science-summary > .home-science-shortcut:first-child {
+    grid-column: auto !important;
+    min-height: 126px !important;
+    padding: 17px 18px !important;
+    border: 1px solid var(--pc-line) !important;
+    border-radius: 18px !important;
+    background: var(--pc-surface) !important;
+    box-shadow: var(--pc-shadow) !important;
+  }
+
+  .hydra-root .home-screen .home-science-summary > .home-science-shortcut:hover {
+    border-color: rgba(29,94,64,.18) !important;
+    background: #fff !important;
+    box-shadow: 0 18px 38px -29px rgba(16,53,37,.6) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  .hydra-root .home-science-shortcut-top {
+    gap: 9px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .hydra-root .home-science-shortcut-icon,
+  .hydra-root .home-science-shortcut--climate .home-science-shortcut-icon {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  .hydra-root .home-science-shortcut-label {
+    font-size: .62rem !important;
+    letter-spacing: .09em !important;
+  }
+
+  .hydra-root .home-science-shortcut-value,
+  .hydra-root .home-science-shortcut--climate .home-science-shortcut-value {
+    margin-bottom: 6px !important;
+    font-size: 1.25rem !important;
+    letter-spacing: -.035em !important;
+  }
+
+  .hydra-root .home-science-shortcut-detail {
+    font-size: .72rem !important;
+  }
+
+  /* Área principal da Home. */
+  .hydra-root .home-screen > .home-property-map-card {
+    grid-column: 1 / span 8 !important;
+  }
+
+  .hydra-root .home-screen > .home-water-savings-card {
+    grid-column: 9 / -1 !important;
+  }
+
+  .hydra-root .home-property-map-hitarea,
+  .hydra-root .home-water-savings-card {
+    border: 1px solid var(--pc-line) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--pc-shadow) !important;
+  }
+
+  .hydra-root .home-property-map-stage {
+    min-height: 290px !important;
+  }
+
+  .hydra-root .home-property-map-footer {
+    min-height: 72px !important;
+    padding: 14px 16px !important;
+  }
+
+  .hydra-root .home-property-map-footer-copy strong {
+    font-size: 13px !important;
+  }
+
+  .hydra-root .home-water-savings-card {
+    min-height: 362px !important;
+    padding: 18px !important;
+    align-content: start !important;
+  }
+
+  .hydra-root .home-water-card-head {
+    gap: 10px !important;
+  }
+
+  .hydra-root .home-water-card-heading strong {
+    font-size: 13px !important;
+  }
+
+  .hydra-root .home-water-card-heading small {
+    font-size: 8px !important;
+  }
+
+  .hydra-root .home-water-card-body {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    margin-top: 28px !important;
+  }
+
+  .hydra-root .home-water-card-month {
+    padding: 0 0 18px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--pc-line) !important;
+  }
+
+  .hydra-root .home-water-card-month strong {
+    margin-top: 5px !important;
+    font-size: 2rem !important;
+  }
+
+  .hydra-root .home-water-card-stats {
+    grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .hydra-root .home-water-card-stats > span {
+    min-height: 58px !important;
+    padding: 10px 0 !important;
+  }
+
+  .hydra-root .home-water-card-stats strong {
+    margin-top: 5px !important;
+    font-size: .78rem !important;
+  }
+
+  .hydra-root .home-screen > .property-hero {
+    grid-column: 1 / span 4 !important;
+    min-height: 232px !important;
+    border-radius: 20px !important;
+    box-shadow: var(--pc-shadow) !important;
+  }
+
+  .hydra-root .home-screen > .home-summary-section {
+    grid-column: 5 / -1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .hydra-root .home-summary-section > .history-home-row,
+  .hydra-root .home-summary-section > .first-action-card,
+  .hydra-root .home-summary-section > .calm-state {
+    min-height: 92px !important;
+  }
+
+  .hydra-root .home-summary-section > .task-card {
+    grid-column: 1 / -1 !important;
+  }
+
+  .hydra-root :is(.history-home-row,.first-action-card,.calm-state,.task-card) {
+    border: 1px solid var(--pc-line) !important;
+    border-radius: 18px !important;
+    box-shadow: var(--pc-shadow) !important;
+  }
+
+  /* Bottom dock menor e mais limpo. */
+  .hydra-root .phone-app .bottom-nav,
+  html body #root .hydra-root .phone-app nav.bottom-nav.bottom-nav {
+    width: min(700px, calc(100vw - 64px)) !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
+    bottom: 16px !important;
+    padding: 5px 7px !important;
+    border-radius: 21px !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav > button,
+  html body #root .hydra-root .phone-app nav.bottom-nav.bottom-nav > button {
+    height: 56px !important;
+    min-height: 56px !important;
+    border-radius: 14px !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav > button.active {
+    background: rgba(29,99,67,.065) !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav > button.nav-nfc > span:first-of-type:not(.touch-ripple) {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    margin: -10px 0 -8px !important;
+    border-radius: 15px !important;
+  }
+
+  /* Perfil: coluna esquerda mais contida, conteúdo principal respira. */
+  .hydra-root .profile-screen {
+    grid-template-columns: 350px minmax(0, 1fr) !important;
+    column-gap: 30px !important;
+  }
+
+  .hydra-root .profile-screen > .profile-hero {
+    min-height: 430px !important;
+    border-radius: 24px !important;
+  }
+
+  .hydra-root .profile-screen > :not(.profile-hero) {
+    max-width: 920px !important;
+    justify-self: stretch !important;
+  }
+
+  .hydra-root .profile-screen .profile-group:not(.profile-products-section) .profile-menu-card {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    border: 1px solid var(--pc-line) !important;
+    box-shadow: var(--pc-shadow) !important;
+  }
+
+  .hydra-root .profile-screen .profile-nivo-promo {
+    padding: 22px !important;
+    border-radius: 20px !important;
+  }
+
+  .hydra-root .profile-screen .profile-nivo-promo h2 {
+    max-width: 520px !important;
+    font-size: 1.3rem !important;
+  }
+
+  .hydra-root .profile-screen .profile-nivo-promo p {
+    max-width: 620px !important;
+    font-size: .75rem !important;
+  }
+
+  .hydra-root .profile-screen .profile-app-card {
+    min-height: 92px !important;
+    padding: 14px !important;
+    border-radius: 17px !important;
+  }
+
+  /* Listas usam melhor o espaço sem ficarem largas demais. */
+  .hydra-root .screen:has(> .nfc-inline-card) > .animal-list {
+    gap: 16px !important;
+  }
+
+  .hydra-root .animal-card,
+  .hydra-root .post-card {
+    border-radius: 18px !important;
+    box-shadow: var(--pc-shadow) !important;
+  }
+
+  .hydra-root .community-screen > .post-list {
+    gap: 18px !important;
+  }
+
+  /* Escuro */
+  .hydra-root.theme-dark {
+    --pc-surface: rgba(15,34,25,.78);
+    --pc-surface-solid: #0f2219;
+    --pc-line: rgba(255,255,255,.075);
+    --pc-muted: #91a098;
+    --pc-shadow: 0 16px 36px -29px rgba(0,0,0,.72);
+  }
+
+  .hydra-root.theme-dark .home-screen .shortcut-row.home-shortcuts-five,
+  .hydra-root.theme-dark .home-screen .home-farm-xp {
+    border-color: var(--pc-line) !important;
+    background: rgba(14,32,24,.65) !important;
+  }
+
+  .hydra-root.theme-dark .home-screen .home-science-summary > .home-science-shortcut,
+  .hydra-root.theme-dark .home-screen .home-science-summary > .home-science-shortcut:first-child {
+    border-color: var(--pc-line) !important;
+    background: var(--pc-surface) !important;
+    box-shadow: var(--pc-shadow) !important;
+  }
+
+  .hydra-root.theme-dark .home-screen .home-science-summary > .home-science-shortcut:hover {
+    background: #11271c !important;
+  }
+}
+
+@media (min-width: 1181px) and (max-width: 1280px) {
+  .hydra-root .app-content > .screen,
+  .hydra-root .app-content .screen {
+    width: min(calc(100% - 56px), 1180px) !important;
+  }
+
+  .hydra-root .home-screen > .greeting-block {
+    grid-column: 1 / span 6 !important;
+  }
+
+  .hydra-root .home-screen > .shortcut-row {
+    grid-column: 7 / -1 !important;
+  }
+
+  .hydra-root .profile-screen {
+    grid-template-columns: 330px minmax(0,1fr) !important;
+  }
+}
