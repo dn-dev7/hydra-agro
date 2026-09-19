@@ -1399,3 +1399,38 @@
     max-width: calc(100vw - 72px) !important;
   }
 }
+
+
+/* DESKTOP UNIFORM BACKGROUND FIX */
+@media (min-width: 1024px) {
+  html,
+  body,
+  #root,
+  .hydra-root,
+  .hydra-root .app-shell,
+  .hydra-root .phone-app,
+  .hydra-root .app-content {
+    background: var(--cream) !important;
+    background-color: var(--cream) !important;
+    background-image: none !important;
+  }
+
+  .hydra-root .app-content > .screen,
+  .hydra-root .app-content .screen {
+    background: transparent !important;
+  }
+
+  .hydra-root.theme-dark,
+  .hydra-root.theme-dark .app-shell,
+  .hydra-root.theme-dark .phone-app,
+  .hydra-root.theme-dark .app-content {
+    background: #09150f !important;
+    background-color: #09150f !important;
+    background-image: none !important;
+  }
+
+  .hydra-root.theme-dark .app-content > .screen,
+  .hydra-root.theme-dark .app-content .screen {
+    background: transparent !important;
+  }
+}
