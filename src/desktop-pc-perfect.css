@@ -1029,3 +1029,245 @@
     grid-template-columns: 330px minmax(0,1fr) !important;
   }
 }
+
+
+/* DESKTOP MOBILE-LIKE FINAL */
+@media (min-width: 1024px) {
+  /* Desktop segue a mesma composição do mobile: fluxo vertical e uma coluna. */
+  .hydra-root {
+    --pc-mobile-width: 860px;
+  }
+
+  .hydra-root .app-content > .screen,
+  .hydra-root .app-content .screen {
+    width: min(calc(100% - 56px), var(--pc-mobile-width)) !important;
+    max-width: var(--pc-mobile-width) !important;
+    margin: 0 auto !important;
+    padding: 28px 0 42px !important;
+  }
+
+  .hydra-root .home-screen,
+  .hydra-root .profile-screen,
+  .hydra-root .community-screen,
+  .hydra-root .screen:has(> .nfc-inline-card),
+  .hydra-root .screen:has(> .water-overview) {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .hydra-root .home-screen > *,
+  .hydra-root .profile-screen > *,
+  .hydra-root .community-screen > *,
+  .hydra-root .screen:has(> .nfc-inline-card) > *,
+  .hydra-root .screen:has(> .water-overview) > * {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  /* Home: mesma ordem e leitura do celular. */
+  .hydra-root .home-screen > .home-brandbar {
+    order: 0 !important;
+  }
+
+  .hydra-root .home-screen > .greeting-block {
+    order: 1 !important;
+    padding: 4px 0 0 !important;
+  }
+
+  .hydra-root .home-screen > .shortcut-row {
+    order: 2 !important;
+  }
+
+  .hydra-root .home-screen > .home-science-summary {
+    order: 3 !important;
+  }
+
+  .hydra-root .home-screen > .home-announcements {
+    order: 4 !important;
+  }
+
+  .hydra-root .home-screen > .home-property-map-card {
+    order: 5 !important;
+  }
+
+  .hydra-root .home-screen > .home-water-savings-card {
+    order: 6 !important;
+  }
+
+  .hydra-root .home-screen > .property-hero {
+    order: 7 !important;
+  }
+
+  .hydra-root .home-screen > .home-summary-section {
+    order: 8 !important;
+  }
+
+  .hydra-root .home-screen .greeting-block h1 {
+    font-size: clamp(2rem, 3.2vw, 2.8rem) !important;
+    line-height: 1 !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five > button {
+    min-height: 76px !important;
+    padding: 9px 6px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  .hydra-root .home-screen .shortcut-row.home-shortcuts-five > button::after {
+    font-size: 9px !important;
+  }
+
+  .hydra-root .home-screen > .home-science-summary {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+    gap: 9px !important;
+  }
+
+  .hydra-root .home-screen .home-science-summary > .home-science-shortcut,
+  .hydra-root .home-screen .home-science-summary > .home-science-shortcut:first-child {
+    min-height: 104px !important;
+    padding: 12px 11px !important;
+    border-radius: 17px !important;
+  }
+
+  .hydra-root .home-science-shortcut-top {
+    margin-bottom: 9px !important;
+  }
+
+  .hydra-root .home-science-shortcut-value,
+  .hydra-root .home-science-shortcut--climate .home-science-shortcut-value {
+    font-size: .95rem !important;
+  }
+
+  .hydra-root .home-property-map-stage {
+    min-height: 210px !important;
+  }
+
+  .hydra-root .home-water-savings-card {
+    min-height: 0 !important;
+    padding: 13px !important;
+  }
+
+  .hydra-root .home-water-card-body {
+    grid-template-columns: 110px minmax(0,1fr) !important;
+    gap: 12px !important;
+    margin-top: 12px !important;
+  }
+
+  .hydra-root .home-water-card-month {
+    padding: 0 11px 0 0 !important;
+    border-right: 1px solid var(--pc-line) !important;
+    border-bottom: 0 !important;
+  }
+
+  .hydra-root .home-water-card-month strong {
+    font-size: 1.2rem !important;
+  }
+
+  .hydra-root .home-screen > .property-hero {
+    min-height: 180px !important;
+  }
+
+  .hydra-root .home-screen > .home-summary-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* Rebanho e comunidade: uma coluna como no mobile. */
+  .hydra-root .screen:has(> .nfc-inline-card) > .animal-list,
+  .hydra-root .community-screen > .post-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* Água: mesma sequência vertical do mobile. */
+  .hydra-root .screen:has(> .water-overview) > .action-pair {
+    display: grid !important;
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    gap: 10px !important;
+  }
+
+  /* Perfil volta ao fluxo vertical do celular. */
+  .hydra-root .profile-screen > .profile-hero {
+    position: relative !important;
+    top: auto !important;
+    min-height: 0 !important;
+  }
+
+  .hydra-root .profile-screen .profile-group:not(.profile-products-section) .profile-menu-card,
+  .hydra-root .profile-screen .profile-products-section .profile-apps-grid {
+    display: block !important;
+  }
+
+  .hydra-root .profile-screen .profile-app-card + .profile-app-card {
+    margin-top: 8px !important;
+  }
+
+  .hydra-root .profile-screen > .logout-button {
+    max-width: none !important;
+  }
+
+  .hydra-root .profile-screen > .profile-version {
+    text-align: center !important;
+  }
+
+  /* Bottom bar segue a leitura do mobile, apenas mais larga. */
+  .hydra-root .phone-app .bottom-nav,
+  html body #root .hydra-root .phone-app nav.bottom-nav.bottom-nav {
+    width: min(620px, calc(100vw - 56px)) !important;
+    height: 72px !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+    padding: 6px 8px !important;
+    border-radius: 23px !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav > button,
+  html body #root .hydra-root .phone-app nav.bottom-nav.bottom-nav > button {
+    height: 58px !important;
+    min-height: 58px !important;
+    padding: 5px 6px !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    border-radius: 15px !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav > button > span:first-of-type:not(.touch-ripple) {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav > button > small {
+    font-size: 9px !important;
+    text-align: center !important;
+  }
+
+  .hydra-root .phone-app .bottom-nav > button.nav-nfc > span:first-of-type:not(.touch-ripple) {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    margin-top: -14px !important;
+    margin-bottom: -5px !important;
+  }
+}
