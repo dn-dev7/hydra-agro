@@ -1,0 +1,128 @@
+/* Nivo-style icon treatment for the Hydra AI screen only.
+   Icons remain semantic and clickable, but decorative icon tiles are removed. */
+
+.assistant-v2 .assistant-v2-hero-top{
+  grid-template-columns:28px minmax(0,1fr) auto !important;
+  gap:10px !important;
+}
+.assistant-v2 .assistant-v2-orb{
+  width:28px !important;
+  height:28px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#d7e4da !important;
+  box-shadow:none !important;
+}
+
+.assistant-v2 .assistant-insight-card{
+  grid-template-columns:27px minmax(0,1fr) auto !important;
+}
+.assistant-v2 .assistant-insight-card > span,
+.assistant-v2 .assistant-insight-card.priority > span{
+  width:27px !important;
+  height:27px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#557561 !important;
+  box-shadow:none !important;
+}
+.assistant-v2 .assistant-insight-card.priority > span{
+  color:#a56d38 !important;
+}
+
+.assistant-v2 .assistant-v2-quick-grid button{
+  grid-template-columns:28px minmax(0,1fr) auto !important;
+}
+.assistant-v2 .assistant-v2-quick-grid .assistant-quick-icon{
+  width:28px !important;
+  height:28px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#587764 !important;
+  box-shadow:none !important;
+}
+
+.assistant-v2 .assistant-avatar{
+  width:27px !important;
+  height:27px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#477258 !important;
+  box-shadow:none !important;
+}
+
+/* Header actions keep a comfortable hit target without drawing a tile behind the icon. */
+.assistant-v2 .assistant-chat-tools button{
+  width:32px !important;
+  height:32px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:8px !important;
+  background:transparent !important;
+  color:#718078 !important;
+  box-shadow:none !important;
+}
+.assistant-v2 .assistant-chat-tools button:hover,
+.assistant-v2 .assistant-chat-tools button:focus-visible{
+  background:transparent !important;
+  color:#315f45 !important;
+}
+
+/* Same rule for the optional WhatsApp status icon. */
+.assistant-v2 .assistant-whatsapp-icon{
+  width:28px !important;
+  height:28px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.assistant-v2 .assistant-whatsapp-link{
+  grid-template-columns:28px minmax(0,1fr) !important;
+}
+
+/* Dark mode keeps the same icon logic: no colored squares or circles. */
+.hydra-root.theme-dark .assistant-v2 .assistant-v2-orb,
+.hydra-root.theme-dark .assistant-v2 .assistant-insight-card > span,
+.hydra-root.theme-dark .assistant-v2 .assistant-insight-card.priority > span,
+.hydra-root.theme-dark .assistant-v2 .assistant-v2-quick-grid .assistant-quick-icon,
+.hydra-root.theme-dark .assistant-v2 .assistant-avatar,
+.hydra-root.theme-dark .assistant-v2 .assistant-whatsapp-icon,
+.hydra-root.theme-dark .assistant-v2 .assistant-chat-tools button{
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.hydra-root.theme-dark .assistant-v2 .assistant-v2-orb{
+  color:#d7e4da !important;
+}
+.hydra-root.theme-dark .assistant-v2 .assistant-insight-card > span,
+.hydra-root.theme-dark .assistant-v2 .assistant-v2-quick-grid .assistant-quick-icon,
+.hydra-root.theme-dark .assistant-v2 .assistant-avatar,
+.hydra-root.theme-dark .assistant-v2 .assistant-whatsapp-icon{
+  color:#91b49b !important;
+}
+.hydra-root.theme-dark .assistant-v2 .assistant-insight-card.priority > span{
+  color:#d29a62 !important;
+}
+.hydra-root.theme-dark .assistant-v2 .assistant-chat-tools button{
+  color:#93a39a !important;
+}
+.hydra-root.theme-dark .assistant-v2 .assistant-chat-tools button:hover,
+.hydra-root.theme-dark .assistant-v2 .assistant-chat-tools button:focus-visible{
+  color:#b8d8c0 !important;
+}
+
+@media(max-width:390px){
+  .assistant-v2 .assistant-v2-hero-top{
+    grid-template-columns:26px minmax(0,1fr) auto !important;
+  }
+  .assistant-v2 .assistant-v2-orb{
+    width:26px !important;
+    height:26px !important;
+  }
+}
