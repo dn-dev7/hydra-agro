@@ -186,31 +186,3 @@
 
 /* Preserve intentionally filled controls: avatar/photo edits, toggles, badges,
    primary action buttons and status dots are not icon decoration. */
-
-
-/* NFC shortcut on Home is an intentional branded scan action. */
-.hydra-root .home-screen .nfc-banner .nfc-banner-icon {
-  width: 44px !important;
-  height: 44px !important;
-  flex: 0 0 44px !important;
-  border: 1px solid rgba(255,255,255,.18) !important;
-  border-radius: 14px !important;
-  background: rgba(255,255,255,.12) !important;
-  background-image: none !important;
-  color: #fff !important;
-  box-shadow: none !important;
-}
-
-.hydra-root .home-screen .nfc-banner .nfc-banner-icon svg {
-  display: block !important;
-  width: 21px !important;
-  height: 21px !important;
-  opacity: 1 !important;
-  color: currentColor !important;
-}
-
-.hydra-root.theme-dark .home-screen .nfc-banner .nfc-banner-icon {
-  border-color: rgba(255,255,255,.16) !important;
-  background: rgba(255,255,255,.10) !important;
-  color: #fff !important;
-}
