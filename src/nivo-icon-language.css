@@ -1,0 +1,166 @@
+/* Hydra Agro — icon language aligned with Nivo.
+   Keeps icon hit areas and layout, removes decorative tiles behind symbols. */
+
+.hydra-root {
+  --hydra-icon-green: #2e6948;
+  --hydra-icon-muted: #66776d;
+  --hydra-icon-blue: #3b8397;
+  --hydra-icon-orange: #b96b28;
+}
+
+/* Generic icon wrappers used across profile, menus, notifications, assistant,
+   settings, operations, home and feature screens. */
+.hydra-root :is(
+  [class$="-icon"],
+  [class*="-icon "],
+  .profile-menu-icon,
+  .row-icon,
+  .menu-icon,
+  .action-icon,
+  .feature-icon,
+  .shortcut-icon,
+  .notification-icon,
+  .setting-icon,
+  .empty-icon,
+  .plan-mark,
+  .preference-option-icon,
+  .water-science-card > span
+) {
+  border-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Common card icons rendered directly as SVG rather than through a wrapper. */
+.hydra-root :is(
+  .home-science-summary button > svg,
+  .science-metrics article > svg,
+  .report-head > svg,
+  .property-section-card > svg,
+  .feature-link-grid button > svg,
+  .first-action-card > svg,
+  .farm-management-card > svg
+) {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Home shortcuts often use a plain span as the icon container. */
+.hydra-root .shortcut-row button > span:first-child,
+.hydra-root .quick-grid > button > span:first-child,
+.hydra-root .feature-link-grid > button > span:first-child,
+.hydra-root .easy-shortcut-icon {
+  border-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Bottom navigation: no pill/tile behind active icons, including NFC. */
+@media (max-width: 899px) {
+  .hydra-root .bottom-nav-indicator::after {
+    opacity: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .hydra-root .bottom-nav > button > span:first-of-type,
+  .hydra-root .bottom-nav > button.active > span:first-of-type,
+  .hydra-root .bottom-nav > button.nav-nfc > span:first-of-type {
+    border-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  .hydra-root .bottom-nav > button.nav-nfc > span:first-of-type {
+    width: 42px !important;
+    height: 42px !important;
+    margin-top: -7px !important;
+    color: var(--orange) !important;
+  }
+}
+
+/* Notification/category icons keep their semantic color, not their tile. */
+.hydra-root .notification-preference-icon,
+.hydra-root .notification-item-icon {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.hydra-root .notification-preference-row.water .notification-preference-icon,
+.hydra-root .notification-item-icon[class*="water"],
+.hydra-root .notification-item-icon[class*="agua"] {
+  color: var(--hydra-icon-blue) !important;
+  background: transparent !important;
+}
+.hydra-root .notification-item-icon[class*="admin"] {
+  color: var(--hydra-icon-orange) !important;
+  background: transparent !important;
+}
+
+/* Profile/app showcase icons follow the same backgroundless language. */
+.hydra-root .profile-app-icon,
+.hydra-root .profile-nivo-mark {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Keep icon buttons clickable, but do not draw a permanent tile behind them.
+   This does not affect primary/secondary text buttons. */
+.hydra-root :is(
+  .screen-header .icon-button,
+  .home-brandbar > .icon-button,
+  .assistant-chat-tools button
+):not(.accent) {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Dark theme: same rule, only icon strokes change for contrast. */
+.hydra-root.theme-dark :is(
+  [class$="-icon"],
+  [class*="-icon "],
+  .profile-menu-icon,
+  .row-icon,
+  .menu-icon,
+  .action-icon,
+  .feature-icon,
+  .shortcut-icon,
+  .notification-icon,
+  .setting-icon,
+  .empty-icon,
+  .plan-mark,
+  .preference-option-icon,
+  .water-science-card > span,
+  .shortcut-row button > span:first-child,
+  .quick-grid > button > span:first-child,
+  .feature-link-grid > button > span:first-child,
+  .easy-shortcut-icon
+) {
+  border-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.hydra-root.theme-dark :is(
+  .home-science-summary button > svg,
+  .science-metrics article > svg
+) {
+  background: transparent !important;
+  color: #9bc9a6 !important;
+}
+
+.hydra-root.theme-dark .notification-preference-icon,
+.hydra-root.theme-dark .notification-item-icon {
+  background: transparent !important;
+}
+
+/* Preserve intentionally filled controls: avatar/photo edits, toggles, badges,
+   primary action buttons and status dots are not icon decoration. */
