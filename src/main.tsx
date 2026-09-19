@@ -56,6 +56,7 @@ import { PublicTagLookup } from "./features/herd/public-tag-lookup";
 import { NotFoundScreen } from "./features/system/not-found-screen";
 import { setupPushNotifications } from "./services/push-notifications";
 import { renderIosPreviewRoute } from "./ios-preview";
+import "./nivo-icon-language.css";
 
 if (typeof document !== "undefined") {
   const platform = Capacitor.getPlatform();
