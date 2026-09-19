@@ -22,6 +22,7 @@ import {
   Palette,
   Pencil,
   ShieldCheck,
+  Sparkles,
   Sprout,
   UserRound,
   UsersRound,
@@ -31,6 +32,7 @@ import { showAppToast } from "../../components/modal-system";
 import type { AppLink, AppRoute, AuthResult, HydraAccount, UpdateAccount } from "../../lib/hydra-types";
 import { hydraSupport } from "../../lib/support";
 import { ProfileInformation, type ProfileInformationKind } from "./profile-information";
+import "./profile-products.css";
 
 type Props = {
   account: HydraAccount;
@@ -274,6 +276,42 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
           <MenuRow icon={<UserRound size={21} />} title="Dados pessoais" subtitle={account.email} onClick={openEditor} />
           <MenuRow icon={<Sprout size={21} />} title="Minha propriedade" subtitle={locationSummary} onClick={() => navigate("property")} />
           <MenuRow icon={<UsersRound size={21} />} title="Equipe e operações" subtitle="Funcionários, relatórios e ocorrências" onClick={() => navigate("operations" as AppRoute)} />
+        </div>
+      </section>
+
+      <section className="profile-group profile-products-section">
+        <span className="group-label">NOSSOS APPS</span>
+
+        <article className="profile-nivo-promo">
+          <div className="profile-nivo-brand">
+            <span className="profile-nivo-mark"><Sparkles size={20} /></span>
+            <div><small>DN DEV</small><strong>nivoai<span>.</span></strong></div>
+          </div>
+          <h2>Uma IA para pensar, criar, estudar e resolver.</h2>
+          <p>Converse, pesquise, trabalhe com arquivos e imagens, organize projetos e continue suas ideias em um só lugar.</p>
+          <button type="button" onClick={() => window.open("https://nivoai.sbs", "_blank", "noopener,noreferrer")}>
+            Conhecer o Nivo <ExternalLink size={15} />
+          </button>
+        </article>
+
+        <div className="profile-apps-grid">
+          <button type="button" className="profile-app-card nivo" onClick={() => window.open("https://nivoai.sbs", "_blank", "noopener,noreferrer")}>
+            <span className="profile-app-icon"><Sparkles size={20} /></span>
+            <span className="profile-app-copy">
+              <strong>Nivo AI</strong>
+              <small>IA para criar, estudar, pesquisar e resolver.</small>
+            </span>
+            <ExternalLink size={16} />
+          </button>
+
+          <button type="button" className="profile-app-card hydra" onClick={() => window.open("https://www.hydraagro.sbs/", "_blank", "noopener,noreferrer")}>
+            <span className="profile-app-icon"><Sprout size={20} /></span>
+            <span className="profile-app-copy">
+              <strong>Hydra Agro</strong>
+              <small>Gestão rural, animais, água, clima e propriedade.</small>
+            </span>
+            <ExternalLink size={16} />
+          </button>
         </div>
       </section>
 
