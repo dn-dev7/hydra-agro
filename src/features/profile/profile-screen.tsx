@@ -285,7 +285,7 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
         <article className="profile-nivo-promo">
           <div className="profile-nivo-brand">
             <span className="profile-nivo-mark"><Sparkles size={20} /></span>
-            <div><small>DN DEV</small><strong>nivoai<span>.</span></strong></div>
+            <div><small>NIVO LABS</small><strong>nivoai<span>.</span></strong></div>
           </div>
           <h2>Uma IA para pensar, criar, estudar e resolver.</h2>
           <p>Converse, pesquise, trabalhe com arquivos e imagens, organize projetos e continue suas ideias em um só lugar.</p>
