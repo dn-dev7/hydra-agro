@@ -77,11 +77,33 @@
     box-shadow: none !important;
   }
 
+  /* NFC is the single intentional exception: it remains the primary scan action. */
   .hydra-root .bottom-nav > button.nav-nfc > span:first-of-type {
-    width: 42px !important;
-    height: 42px !important;
-    margin-top: -7px !important;
-    color: var(--orange) !important;
+    width: 52px !important;
+    height: 52px !important;
+    margin-top: -18px !important;
+    border: 5px solid var(--cream) !important;
+    border-radius: 19px !important;
+    background: var(--orange) !important;
+    background-image: none !important;
+    color: #fff !important;
+    box-shadow: 0 14px 28px -16px rgba(255,126,12,.9) !important;
+    display: grid !important;
+    place-items: center !important;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hydra-root .bottom-nav > button.nav-nfc > span:first-of-type svg {
+    display: block !important;
+    opacity: 1 !important;
+    color: currentColor !important;
+  }
+
+  .hydra-root.theme-dark .bottom-nav > button.nav-nfc > span:first-of-type {
+    border-color: #08261c !important;
+    background: var(--orange) !important;
+    color: #fff !important;
   }
 }
 
