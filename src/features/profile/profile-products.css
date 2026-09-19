@@ -1,0 +1,157 @@
+.profile-products-section{
+  margin-top:18px;
+}
+.profile-nivo-promo{
+  position:relative;
+  overflow:hidden;
+  padding:18px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 88% 12%,rgba(0,232,143,.12),transparent 30%),
+    linear-gradient(145deg,#08110d,#0c1711);
+  color:#f4f8f5;
+  box-shadow:0 16px 36px rgba(7,30,20,.12);
+}
+.profile-nivo-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.profile-nivo-mark{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  color:#78ed9b;
+}
+.profile-nivo-brand>div{
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+}
+.profile-nivo-brand small{
+  color:#718378;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.profile-nivo-brand strong{
+  color:#f7faf8;
+  font-size:16px;
+  line-height:1;
+  letter-spacing:-.04em;
+}
+.profile-nivo-brand strong span{
+  color:#78ed9b;
+}
+.profile-nivo-promo h2{
+  margin:17px 0 8px;
+  max-width:300px;
+  color:#f6faf7;
+  font-size:17px;
+  line-height:1.12;
+  letter-spacing:-.035em;
+}
+.profile-nivo-promo p{
+  margin:0;
+  max-width:330px;
+  color:#94a69a;
+  font-size:10px;
+  line-height:1.55;
+}
+.profile-nivo-promo>button{
+  min-height:38px;
+  margin-top:16px;
+  padding:0 13px;
+  border:1px solid rgba(120,237,155,.16);
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  background:#78ed9b;
+  color:#07110b;
+  font-size:9px;
+  font-weight:800;
+  box-shadow:none;
+}
+.profile-apps-grid{
+  margin-top:9px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.profile-app-card{
+  min-width:0;
+  min-height:86px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr) 15px;
+  gap:8px;
+  align-items:center;
+  background:var(--paper);
+  text-align:left;
+  box-shadow:none;
+}
+.profile-app-icon{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  background:transparent;
+}
+.profile-app-card.nivo .profile-app-icon{
+  color:#1f6c45;
+}
+.profile-app-card.hydra .profile-app-icon{
+  color:#52754c;
+}
+.profile-app-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.profile-app-copy strong{
+  color:var(--ink);
+  font-size:9.5px;
+  line-height:1.2;
+}
+.profile-app-copy small{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:6.8px;
+  line-height:1.35;
+}
+.profile-app-card>svg{
+  color:#9aa49e;
+}
+.profile-app-card:active{
+  transform:scale(.98);
+}
+.hydra-root.theme-dark .profile-app-card{
+  border-color:#294235;
+  background:#0e1d15;
+}
+.hydra-root.theme-dark .profile-app-copy strong{
+  color:#eef3ef;
+}
+.hydra-root.theme-dark .profile-app-copy small{
+  color:#91a098;
+}
+.hydra-root.theme-dark .profile-app-card.nivo .profile-app-icon{
+  color:#8ce6a2;
+}
+.hydra-root.theme-dark .profile-app-card.hydra .profile-app-icon{
+  color:#a4c59b;
+}
+.hydra-root.theme-dark .profile-app-card>svg{
+  color:#6f8176;
+}
+@media(max-width:390px){
+  .profile-apps-grid{
+    grid-template-columns:1fr;
+  }
+}
