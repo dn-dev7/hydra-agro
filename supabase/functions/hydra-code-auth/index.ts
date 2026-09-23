@@ -157,11 +157,12 @@ Deno.serve(async (request: Request) => {
     if (error) throw error;
     if (!existing) return reply(origin, { message: "Código de recuperação inválido." }, 401);
     const access = issue(16), nextRecovery = issue(24);
-    const { error: updateError } = await admin.from("hydra_code_access").update({
+    const { data: rotated, error: updateError } = await admin.from("hydra_code_access").update({
       access_hash: await sha(access), recovery_hash: await sha(nextRecovery),
       updated_at: new Date().toISOString(),
-    }).eq("user_id", existing.user_id).eq("recovery_hash", await sha(recovery));
+    }).eq("user_id", existing.user_id).eq("recovery_hash", await sha(recovery)).select("user_id");
     if (updateError) throw updateError;
+    if (!rotated?.length) return reply(origin, { message: "Este código de recuperação já foi utilizado." }, 409);
     return reply(origin, { userId: existing.user_id, accessCode: formatted(access), recoveryCode: formatted(nextRecovery) });
   } catch (error) {
     console.error("hydra-code-auth", error instanceof Error ? error.message : "unknown");
