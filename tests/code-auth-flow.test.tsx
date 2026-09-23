@@ -8,7 +8,6 @@ const actions = {
   onStaffLogin: vi.fn(async () => ({ ok: true, message: "ok" })),
   onNivoLogin: vi.fn(async () => ({ ok: true, message: "ok" })),
   onNivoCreate: vi.fn(async () => ({ result: { ok: true, message: "ok" } })),
-  onAdminLogin: vi.fn(async () => ({ ok: true, message: "ok" })),
 };
 
 describe("entrada por código do Hydra Agro", () => {
@@ -28,10 +27,19 @@ describe("entrada por código do Hydra Agro", () => {
     expect(screen.getByLabelText("Código de recuperação")).toBeInTheDocument();
   });
 
-  it("exibe acesso com Nivo e painel administrativo", () => {
+  it("exibe o acesso com Nivo sem mostrar ferramentas do dono fora da conta", () => {
     render(<HydraCodeAuthFlow {...actions} />);
     expect(screen.getByRole("button", { name: /Entrar com Nivo/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Painel adm/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Acesso de funcionário/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Painel adm/i })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Código administrativo")).not.toBeInTheDocument();
+  });
+
+  it("exibe a página de boas-vindas rural branca sem pet", () => {
+    const { container } = render(<HydraCodeAuthFlow {...actions} />);
+    expect(screen.getByRole("heading", { name: /Sua fazenda em um só lugar/i })).toBeInTheDocument();
+    expect(container.querySelector(".hydra-welcome-card")).toBeInTheDocument();
+    expect(container.querySelector(".welcome-pet, .nivo-welcome-pet")).not.toBeInTheDocument();
   });
 
   it("preserva o código de funcionários no mesmo fluxo", () => {
