@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, Check, Copy, KeyRound, Leaf, ShieldCheck, UsersRound, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Copy, KeyRound, Leaf, LifeBuoy, LogIn, ShieldCheck, UserPlus, UsersRound, X } from "lucide-react";
 import { HydraMark } from "../../components/brand";
 import type { AuthResult } from "../../lib/hydra-types";
 import {
@@ -113,8 +113,8 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
         <p>Gerencie animais, água, tarefas e setores da propriedade. Comece com um código privado, sem senha ou e-mail.</p>
       </div>
       <div className="hydra-code-welcome-actions">
-        <button className="hydra-code-primary" type="button" onClick={() => switchView("access")}>Entrar <ArrowRight size={19} /></button>
-        <button className="hydra-code-secondary" type="button" onClick={() => switchView("create")}>Criar conta</button>
+        <button className="hydra-code-primary" type="button" onClick={() => switchView("access")}><LogIn size={18} /> Entrar <ArrowRight size={19} /></button>
+        <button className="hydra-code-secondary" type="button" onClick={() => switchView("create")}><UserPlus size={18} /> Criar conta</button>
         <button className="hydra-code-muted-button" type="button" onClick={() => switchView("staff")}><UsersRound size={17} /> Acesso de funcionário</button>
       </div>
     </main>
@@ -126,8 +126,8 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
         <button className="hydra-code-close" aria-label="Fechar" type="button" disabled={busy || view === "issued"} onClick={() => switchView("landing")}><X size={19} /></button>
       </header>
       {(view === "access" || view === "create") && <nav className="hydra-code-tabs" aria-label="Tipo de acesso">
-        <button className={view === "access" ? "active" : ""} aria-current={view === "access" ? "page" : undefined} onClick={() => switchView("access")}>Entrar</button>
-        <button className={view === "create" ? "active" : ""} aria-current={view === "create" ? "page" : undefined} onClick={() => switchView("create")}>Criar conta</button>
+        <button className={view === "access" ? "active" : ""} aria-current={view === "access" ? "page" : undefined} onClick={() => switchView("access")}><LogIn size={16} /> Entrar</button>
+        <button className={view === "create" ? "active" : ""} aria-current={view === "create" ? "page" : undefined} onClick={() => switchView("create")}><UserPlus size={16} /> Criar conta</button>
       </nav>}
       <form className="hydra-code-panel" onSubmit={(event: FormEvent) => {
         event.preventDefault();
@@ -145,7 +145,7 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
           {view === "access" && <>
             <label className="hydra-code-label" htmlFor="hydra-access-code">Código de acesso</label>
             <input autoFocus id="hydra-access-code" className="hydra-code-input" inputMode="text" type="text" value={code} maxLength={19} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="XXXX-XXXX-XXXX-XXXX" onChange={(event) => { setCode(formatHydraCode(event.target.value, 16)); setError(""); }} />
-            <button className="hydra-code-muted-button inline" type="button" onClick={() => switchView("recover")}>Perdi meu código</button>
+            <button className="hydra-code-muted-button inline" type="button" onClick={() => switchView("recover")}><LifeBuoy size={16} /> Perdi meu código</button>
           </>}
 
           {view === "recover" && <>
@@ -155,9 +155,9 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
           </>}
 
           {view === "create" && <div className="hydra-code-explainer">
-            <span>1</span><p>Geramos seu código de acesso privado.</p>
-            <span>2</span><p>Você guarda o código e a chave de recuperação em local seguro.</p>
-            <span>3</span><p>Depois, entra apenas com seu código de acesso.</p>
+            <span><KeyRound size={15} /></span><p>Geramos seu código de acesso privado.</p>
+            <span><ShieldCheck size={15} /></span><p>Você guarda o código e a chave de recuperação em local seguro.</p>
+            <span><LogIn size={15} /></span><p>Depois, entra apenas com seu código de acesso.</p>
           </div>}
 
           {view === "staff" && <>
