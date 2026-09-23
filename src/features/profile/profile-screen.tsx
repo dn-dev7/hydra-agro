@@ -275,7 +275,7 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
     }
   }
 
-  const isAdmin = ["moderator", "admin", "owner"].includes(account.role);
+  const isAdmin = account.role === "owner";
   const locationSummary = account.property.municipality && account.property.state
     ? `${account.property.municipality}, ${account.property.state}${account.property.postalCode ? ` · CEP ${account.property.postalCode}` : ""}`
     : "Complete UF e CEP em Minha propriedade";
