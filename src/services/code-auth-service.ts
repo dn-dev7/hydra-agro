@@ -50,7 +50,7 @@ export async function signInWithHydraCode(code: string) {
   // O Supabase troca o ticket por uma sessão normal, com RLS e renovação.
   const { data, error } = await requireSupabase().auth.verifyOtp({
     token_hash: tokenHash,
-    type: "magiclink",
+    type: "email",
   });
   if (error || !data.user || !data.session) {
     throw new Error("Não foi possível abrir a sessão. Tente entrar novamente.");
