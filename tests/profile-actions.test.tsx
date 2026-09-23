@@ -39,7 +39,7 @@ function openSetting(buttonName: string | RegExp) {
 
 describe("ações de preferências e segurança", () => {
   it.each([
-    [/^Segurança/, "E-mail e senha"],
+    [/^Código de acesso/, "Seu código de acesso"],
     [/^Notificações/, "Notificações do aplicativo"],
     [/^Apoie o Hydra Agro/, "Apoie o Hydra Agro"],
     [/^Termos de uso/, "Termos de uso"],
@@ -63,14 +63,11 @@ describe("ações de preferências e segurança", () => {
     expect(updateAccountMock.mock.calls[0][1]).toEqual({ requireRemote: true });
   });
 
-  it("altera a senha usando a autenticação existente", async () => {
-    const { changeCredentials } = setup();
-    openSetting(/^Segurança/);
-    fireEvent.change(screen.getByLabelText(/^Nova senha/), { target: { value: "senha-segura-123" } });
-    fireEvent.change(screen.getByLabelText("Confirmar nova senha"), { target: { value: "senha-segura-123" } });
-    fireEvent.click(screen.getByRole("button", { name: "Salvar alterações" }));
-
-    await waitFor(() => expect(changeCredentials).toHaveBeenCalledWith({ password: "senha-segura-123" }));
+  it("remove o acesso por e-mail e senha das configurações quando o login por código está ativo", () => {
+    setup();
+    openSettings();
+    expect(screen.queryByRole("button", { name: /^Segurança/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Código de acesso/ })).toBeInTheDocument();
   });
 
   it("mostra conteúdo completo nos termos", () => {
