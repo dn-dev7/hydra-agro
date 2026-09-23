@@ -36,7 +36,7 @@ import "./profile-products.css";
 import { enrollHydraCodeAccess, getHydraCodeStatus, type IssuedHydraCodes } from "../../services/code-auth-service";
 import "./profile-code-access.css";
 
-const codeAuthEnabled = ["pilot", "true"].includes(import.meta.env.VITE_HYDRA_CODE_AUTH || "");
+const codeAuthEnabled = import.meta.env.VITE_HYDRA_CODE_AUTH !== "false";
 
 type Props = {
   account: HydraAccount;
