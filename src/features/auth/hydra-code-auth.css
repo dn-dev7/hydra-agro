@@ -41,6 +41,16 @@ html body #root .hydra-root .hydra-code-entry * { box-sizing:border-box; }
 .hydra-code-entry .hydra-code-primary:not(:disabled):active{transform:scale(.985)}
 .hydra-code-entry .hydra-code-primary:not(:disabled):hover{background:#0c603d}
 .hydra-code-entry .hydra-code-secondary{background:#fff;color:var(--ha-forest);border-color:var(--ha-border)}
+.hydra-code-entry .hydra-code-nivo{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:54px;border-radius:18px;border:1px solid #bfd6c5;background:#eaf3eb;color:#0b5136;font-size:14px;font-weight:800;box-shadow:0 8px 20px rgba(11,81,54,.055);transition:transform .17s ease,background .17s ease}
+.hydra-code-entry .hydra-code-nivo svg:last-child{margin-left:auto}
+.hydra-code-entry .hydra-code-nivo:not(:disabled):active{transform:scale(.985)}
+.hydra-code-entry .hydra-code-minor-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hydra-code-entry .hydra-code-minor-actions .hydra-code-muted-button{min-height:42px;border:1px solid var(--ha-border);border-radius:14px;background:rgba(255,255,255,.62);color:#587163}
+.hydra-code-entry .hydra-code-nivo-note{display:flex;align-items:flex-start;gap:10px;margin:13px 0 4px;padding:13px 14px;border-radius:14px;background:#eef6ee;border:1px solid #d8e8da;color:#4b6c57;font-size:12px;line-height:1.5}
+.hydra-code-entry .hydra-code-nivo-note svg{flex:0 0 auto;color:var(--ha-forest);margin-top:1px}
+.hydra-code-entry .hydra-code-nivo-note strong{color:var(--ha-forest)}
+.hydra-code-entry .hydra-code-issued-nivo>div{border-color:#cfe2d2;background:#fcfffc}
+
 .hydra-code-entry .hydra-code-muted-button{display:flex;justify-content:center;align-items:center;gap:8px;border:0;background:transparent;color:var(--ha-muted);font-size:13px;font-weight:750;min-height:40px}
 .hydra-code-entry .hydra-code-muted-button.inline{justify-content:flex-start;margin:11px 0 0;padding:0;min-height:30px}
 .hydra-code-entry .hydra-code-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;margin:26px auto 10px;width:min(100%,380px);height:52px;background:#edf3ec;border:1px solid var(--ha-border);border-radius:17px}
