@@ -1,0 +1,34 @@
+/* Conversa de configuração inicial com organização do Nivo e marca Hydra. */
+html body #root .hydra-root .hydra-questions { padding-top:max(18px,env(safe-area-inset-top,0px));overflow:hidden;height:100dvh;min-height:0; }
+.hydra-questions .hydra-questions-progress{width:min(100%,560px);height:4px;border-radius:99px;background:#e3ebe3;overflow:hidden;margin:0 auto 16px}
+.hydra-questions .hydra-questions-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#0b5136,#ff922e);transition:width .25s ease}
+.hydra-questions .hydra-questions-pet{margin:10px auto 6px;display:grid;place-items:center;width:77px;height:77px;border-radius:26px;background:#e4f1e5;box-shadow:0 8px 25px rgba(11,81,54,.085)}
+.hydra-questions .hydra-questions-pet svg{width:51px;height:51px}
+.hydra-questions .hydra-questions-pet.is-thinking{animation:ha-pet-breathe .75s ease-in-out infinite alternate}
+.hydra-questions .hydra-questions-feed{display:flex;flex-direction:column;flex:1;gap:15px;width:min(100%,560px);margin:0 auto;overflow-y:auto;overscroll-behavior:contain;padding:14px 2px 22px;scrollbar-width:thin;min-height:0}
+.hydra-questions .hydra-questions-turn{display:flex;flex-direction:column;gap:8px;flex-shrink:0;animation:ha-code-enter .35s ease both}
+.hydra-questions .hydra-questions-turn>p{font-family:Manrope,system-ui,sans-serif;font-size:clamp(17px,4.5vw,23px);letter-spacing:-.035em;line-height:1.4;color:#163c2c;font-weight:750;margin:0;max-width:480px}
+.hydra-questions .hydra-questions-turn>small{font-size:12px;color:#748779;line-height:1.5}
+.hydra-questions .hydra-answer-bubble{align-self:flex-end;text-align:left;max-width:88%;border-radius:18px 18px 5px 18px;padding:12px 16px;background:#e4f0e5;color:#17442c;font-size:13px;font-weight:750;line-height:1.4;animation:ha-code-enter .3s ease both}
+.hydra-questions .hydra-questions-dots{display:flex;align-items:center;gap:5px;padding:9px 0}
+.hydra-questions .hydra-questions-dots i{width:6px;height:6px;border-radius:50%;background:#7ea58e;animation:ha-pet-breathe .6s ease-in-out infinite alternate}
+.hydra-questions .hydra-questions-dots i:nth-child(2){animation-delay:.1s}.hydra-questions .hydra-questions-dots i:nth-child(3){animation-delay:.2s}
+.hydra-questions .hydra-questions-choices{display:grid;gap:9px;flex-shrink:0}
+.hydra-questions .hydra-questions-choices button{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:12px;width:100%;min-height:50px;padding:12px 15px;background:#fff;color:#254a37;border:1px solid #e0e9e0;border-radius:15px;font-size:13px;font-weight:700;line-height:1.38;transition:background .16s ease,border-color .16s ease}
+.hydra-questions .hydra-questions-choices button.selected{background:#ecf5ec;border-color:#8cb99a;color:#0b5136}
+.hydra-questions .hydra-choice-indicator{display:grid;place-items:center;flex-shrink:0;width:23px;height:23px;border-radius:50%;border:1px solid #d9e5d9;color:#fff;background:#f6f9f6}
+.hydra-questions .hydra-questions-choices button.selected .hydra-choice-indicator{background:#0b5136;border-color:#0b5136}
+.hydra-questions .hydra-questions-composer{display:grid;gap:8px;width:min(100%,560px);margin:0 auto;padding:12px 0 max(8px,env(safe-area-inset-bottom,0px));border-top:1px solid #e7ebe5;background:#fbfaf6;flex-shrink:0}
+.hydra-questions .hydra-questions-composer form{display:grid;gap:10px;background:#fff;border:1px solid #dce8df;border-radius:18px;padding:13px}
+.hydra-questions .hydra-questions-composer input{width:100%;font-family:inherit;font-size:15px;color:#143d2c;border:0;background:transparent;padding:5px 0;outline:0}
+.hydra-questions .hydra-questions-control-row{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-height:42px}
+.hydra-questions .hydra-questions-control-row>span{color:#819387;font-size:12px;margin-right:auto}
+.hydra-questions .hydra-questions-mic{display:grid;place-items:center;width:41px;height:41px;border:0;border-radius:14px;color:#0b5136;background:#eff5ef}
+.hydra-questions .hydra-questions-next{display:grid;place-items:center;width:41px;height:41px;border:0;border-radius:14px;color:white;background:#0b5136}
+.hydra-questions .hydra-questions-back{display:flex;justify-content:flex-start;align-items:center;gap:6px;min-height:30px;padding:0;background:transparent;border:0;font-size:12px;font-weight:700;color:#7b8e80}
+.hydra-questions .hydra-questions-complete{display:grid;justify-items:start;gap:10px;background:#e8f3e9;border:1px solid #d5e6d5;border-radius:20px;padding:24px;color:#0b5136}
+.hydra-questions .hydra-questions-complete h1{font-family:Sora,Manrope,sans-serif;font-size:26px;letter-spacing:-.04em;margin:0}
+.hydra-questions .hydra-questions-complete p{font-size:14px;line-height:1.55;color:#567864;margin:0}
+@keyframes ha-pet-breathe{from{transform:translateY(1px) scale(.98);opacity:.78}to{transform:translateY(-2px) scale(1.04);opacity:1}}
+@media(max-height:680px){.hydra-questions .hydra-questions-pet{height:52px;width:52px;border-radius:15px;margin:3px auto}.hydra-questions .hydra-questions-pet svg{width:34px;height:34px}.hydra-questions .hydra-questions-feed{gap:10px}}
+@media(prefers-reduced-motion:reduce){.hydra-questions *{animation:none!important;transition:none!important}}
