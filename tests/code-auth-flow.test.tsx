@@ -4,7 +4,11 @@ import { HydraCodeAuthFlow } from "../src/features/auth/hydra-code-auth";
 
 const actions = {
   onCodeLogin: vi.fn(async () => ({ ok: true, message: "ok" })),
+  onCreatedLocalAccount: vi.fn(async () => ({ ok: true, message: "ok" })),
   onStaffLogin: vi.fn(async () => ({ ok: true, message: "ok" })),
+  onNivoLogin: vi.fn(async () => ({ ok: true, message: "ok" })),
+  onNivoCreate: vi.fn(async () => ({ result: { ok: true, message: "ok" } })),
+  onAdminLogin: vi.fn(async () => ({ ok: true, message: "ok" })),
 };
 
 describe("entrada por código do Hydra Agro", () => {
@@ -24,9 +28,15 @@ describe("entrada por código do Hydra Agro", () => {
     expect(screen.getByLabelText("Código de recuperação")).toBeInTheDocument();
   });
 
+  it("exibe acesso com Nivo e painel administrativo", () => {
+    render(<HydraCodeAuthFlow {...actions} />);
+    expect(screen.getByRole("button", { name: /Entrar com Nivo/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Painel adm/i })).toBeInTheDocument();
+  });
+
   it("preserva o código de funcionários no mesmo fluxo", () => {
     render(<HydraCodeAuthFlow {...actions} />);
-    fireEvent.click(screen.getByRole("button", { name: /Acesso de funcionário/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Funcionário/i }));
     expect(screen.getByLabelText("Código de funcionário")).toBeInTheDocument();
   });
 });
