@@ -423,7 +423,7 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
       </Modal>
 
       <Modal open={logoutConfirm} onClose={() => setLogoutConfirm(false)} eyebrow="CONFIRMAÇÃO" title="Finalizar sessão" centered dismissible={saving !== "logout"}>
-        <div className="confirm-action"><span><LogOut size={27} /></span><p>Deseja sair desta conta?</p>{error && <p className="form-error" role="alert">{error}</p>}<div className="modal-action-row"><button className="secondary-button" onClick={() => setLogoutConfirm(false)} disabled={saving === "logout"}>Cancelar</button><LoadingButton className="danger-button" onClick={() => void confirmLogout()} loading={saving === "logout"} loadingLabel="Saindo…">Sair</LoadingButton></div></div>
+        <div className="confirm-action"><span><LogOut size={27} /></span><p>Deseja sair desta conta?</p>{error && <p className="form-error" role="alert">{error}</p>}<div className="modal-action-row"><button className="secondary-button" onClick={() => setLogoutConfirm(false)} disabled={saving === "logout"}>Cancelar</button><LoadingButton className="danger-button" onClick={() => void confirmLogout()} loading={saving === "logout"} loadingLabel="Aguarde">Sair</LoadingButton></div></div>
       </Modal>
     </div>
   );
