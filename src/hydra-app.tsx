@@ -69,12 +69,10 @@ export default function HydraApp() {
   const mainRouteIds: AppRoute[] = mainTabs.map((tab) => tab.id);
   const [splash, setSplash] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [returnToLogin, setReturnToLogin] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(false);
   async function logoutToLogin() {
     if (loggingOut) return;
     setLoggingOut(true);
-    setReturnToLogin(true);
     setOnboardingDone(false);
     try { await store.logout(); setRoute("home"); setQuickOpen(false); }
     finally { setLoggingOut(false); }
@@ -178,13 +176,6 @@ export default function HydraApp() {
   }, []);
 
   useEffect(() => () => { if (quickTimer.current) window.clearTimeout(quickTimer.current); }, []);
-
-  useEffect(() => {
-    if (store.account?.id === "hydra-admin-owner-v1") {
-      setRoute("admin");
-      setBackRoute("home");
-    }
-  }, [store.account?.id]);
 
   useLayoutEffect(() => {
     const scrollingElement = document.scrollingElement;
@@ -346,8 +337,7 @@ export default function HydraApp() {
 
   if (!store.ready) return splashLayer;
 
-  if (loggingOut) return <main className="auth-logout-status" role="status" aria-live="polite"><span>Saindo…</span><p>Encerrando sua sessão</p></main>;
-  if (!store.account) return <><HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onCreatedLocalAccount={store.activateCreatedCodeAccount} onStaffLogin={store.loginStaff} onNivoLogin={store.loginNivo} onNivoCreate={store.createNivoLinkedAccount} onAdminLogin={store.loginAdminCode} />{splashLayer}</>;
+  if (loggingOut || !store.account) return <><HydraCodeAuthFlow initialView="landing" onCodeLogin={store.loginCode} onCreatedLocalAccount={store.activateCreatedCodeAccount} onStaffLogin={store.loginStaff} onNivoLogin={store.loginNivo} onNivoCreate={store.createNivoLinkedAccount} />{loggingOut ? null : splashLayer}</>;
   if (store.account.bannedAt) return <><BannedScreen reason={store.account.banReason} logout={logoutToLogin} />{splashLayer}</>;
   if (passwordRecovery) return <><PasswordRecoveryScreen save={async (password) => { const result = await store.changeCredentials({ password }); if (result.ok) window.setTimeout(() => setPasswordRecovery(false), 650); return result; }} logout={async () => { setPasswordRecovery(false); await logoutToLogin(); }} />{splashLayer}</>;
 
