@@ -44,7 +44,7 @@ html body #root .hydra-root .hydra-code-entry * { box-sizing:border-box; }
 .hydra-code-entry .hydra-code-muted-button{display:flex;justify-content:center;align-items:center;gap:8px;border:0;background:transparent;color:var(--ha-muted);font-size:13px;font-weight:750;min-height:40px}
 .hydra-code-entry .hydra-code-muted-button.inline{justify-content:flex-start;margin:11px 0 0;padding:0;min-height:30px}
 .hydra-code-entry .hydra-code-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;margin:26px auto 10px;width:min(100%,380px);height:52px;background:#edf3ec;border:1px solid var(--ha-border);border-radius:17px}
-.hydra-code-entry .hydra-code-tabs button{border:0;background:transparent;color:#718478;font-size:13px;font-weight:750;border-radius:13px}
+.hydra-code-entry .hydra-code-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;color:#718478;font-size:13px;font-weight:750;border-radius:13px}
 .hydra-code-entry .hydra-code-tabs button.active{background:var(--ha-forest);color:#fff;box-shadow:0 6px 15px rgba(11,81,54,.13)}
 .hydra-code-entry .hydra-code-panel{display:flex;flex-direction:column;flex:1;width:min(100%,520px);min-height:380px;margin:0 auto}
 .hydra-code-entry .hydra-code-question{margin:auto 0;animation:ha-code-enter .3s ease both;padding:22px 0 28px}
@@ -57,7 +57,7 @@ html body #root .hydra-root .hydra-code-entry * { box-sizing:border-box; }
 .hydra-code-entry .hydra-code-hint{font-size:12px!important;margin:10px 0!important}
 .hydra-code-entry .hydra-code-error{padding:12px 14px;border-radius:12px;background:#fff0ec;color:#a13b23;font-size:13px;line-height:1.5;margin:16px 0 0}
 .hydra-code-entry .hydra-code-explainer{display:grid;grid-template-columns:29px 1fr;align-items:center;column-gap:12px;row-gap:13px;padding:20px 16px;background:rgba(232,244,234,.6);border:1px solid var(--ha-border);border-radius:18px}
-.hydra-code-entry .hydra-code-explainer span{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#d9ebdd;color:var(--ha-forest);font-weight:800;font-size:12px}
+.hydra-code-entry .hydra-code-explainer span{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#d9ebdd;color:var(--ha-forest);font-weight:800;font-size:12px}.hydra-code-entry .hydra-code-explainer span svg{width:15px;height:15px}
 .hydra-code-entry .hydra-code-explainer p{margin:0;font-size:13px;line-height:1.45;color:#456857}
 .hydra-code-entry .hydra-code-issued{display:grid;gap:12px;max-width:100%;margin:22px 0 0}
 .hydra-code-entry .hydra-code-issued>div{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid var(--ha-border);padding:16px;border-radius:18px}
