@@ -179,6 +179,13 @@ export default function HydraApp() {
 
   useEffect(() => () => { if (quickTimer.current) window.clearTimeout(quickTimer.current); }, []);
 
+  useEffect(() => {
+    if (store.account?.id === "hydra-admin-owner-v1") {
+      setRoute("admin");
+      setBackRoute("home");
+    }
+  }, [store.account?.id]);
+
   useLayoutEffect(() => {
     const scrollingElement = document.scrollingElement;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -340,7 +347,7 @@ export default function HydraApp() {
   if (!store.ready) return splashLayer;
 
   if (loggingOut) return <main className="auth-logout-status" role="status" aria-live="polite"><span>Saindo…</span><p>Encerrando sua sessão</p></main>;
-  if (!store.account) return <><HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onCreatedLocalAccount={store.activateCreatedCodeAccount} onStaffLogin={store.loginStaff} />{splashLayer}</>;
+  if (!store.account) return <><HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onCreatedLocalAccount={store.activateCreatedCodeAccount} onStaffLogin={store.loginStaff} onNivoLogin={store.loginNivo} onNivoCreate={store.createNivoLinkedAccount} onAdminLogin={store.loginAdminCode} />{splashLayer}</>;
   if (store.account.bannedAt) return <><BannedScreen reason={store.account.banReason} logout={logoutToLogin} />{splashLayer}</>;
   if (passwordRecovery) return <><PasswordRecoveryScreen save={async (password) => { const result = await store.changeCredentials({ password }); if (result.ok) window.setTimeout(() => setPasswordRecovery(false), 650); return result; }} logout={async () => { setPasswordRecovery(false); await logoutToLogin(); }} />{splashLayer}</>;
 
