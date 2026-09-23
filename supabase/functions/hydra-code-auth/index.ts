@@ -167,6 +167,8 @@ Deno.serve(async (request: Request) => {
     const action = String(body?.action || "");
 
     if (action === "health") {
+      const guard = await rateLimit("hydra-code:health", 1000, 60);
+      if (!guard.allowed) return json(origin, { message: "Serviço temporariamente ocupado." }, 429);
       return json(origin, { ok: true, mode: "code-v2" });
     }
 
