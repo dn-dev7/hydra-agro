@@ -67,6 +67,10 @@ async function readLocalAccount(userId: string): Promise<HydraAccount | null> {
   }
 }
 
+export function loadLocalHydraCodeAccount(userId: string) {
+  return readLocalAccount(userId);
+}
+
 export async function saveLocalHydraCodeAccount(account: HydraAccount) {
   await Preferences.set({ key: localAccountKey(account.id), value: JSON.stringify(account) });
 }
