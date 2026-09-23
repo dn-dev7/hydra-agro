@@ -1,6 +1,6 @@
 import {Preferences} from "@capacitor/preferences";
 import {createEmptyAccount, type HydraAccount} from "../lib/hydra-types";
-import {activateLocalHydraCodeAccount, saveLocalHydraCodeAccount} from "./code-auth-service";
+import {activateLocalHydraCodeAccount, loadLocalHydraCodeAccount, saveLocalHydraCodeAccount} from "./code-auth-service";
 
 const FALLBACK_NIVO_CHAT="https://nivostudy.danqxy7.workers.dev/api/hydra/chat";
 const TOKEN_PREFIX="hydra.nivo.integration.";
@@ -38,12 +38,10 @@ async function request(body:Record<string,unknown>, token?:string){
   return data??{};
 }
 
-async function ensureLocalLinkedAccount(userId:string, role:"owner"|"user", integrationToken?:string){
+async function ensureLocalLinkedAccount(userId:string, role:"owner"|"user", integrationToken?:string, activate=true){
   const id="nivo-"+userId;
-  let account:HydraAccount;
-  try{
-    account=await activateLocalHydraCodeAccount(id);
-  }catch{
+  let account=await loadLocalHydraCodeAccount(id);
+  if(!account){
     account=createEmptyAccount({
       id,
       email:"",
@@ -51,7 +49,6 @@ async function ensureLocalLinkedAccount(userId:string, role:"owner"|"user", inte
     });
     account={...account,role:role==="owner"?"owner":"user"};
     await saveLocalHydraCodeAccount(account);
-    account=await activateLocalHydraCodeAccount(id);
   }
   if(role==="owner"&&account.role!=="owner"){
     account={...account,role:"owner"};
@@ -60,7 +57,7 @@ async function ensureLocalLinkedAccount(userId:string, role:"owner"|"user", inte
   if(integrationToken){
     await Preferences.set({key:TOKEN_PREFIX+id,value:integrationToken});
   }
-  return account;
+  return activate?await activateLocalHydraCodeAccount(id):account;
 }
 
 export async function loginHydraWithNivo(code:string):Promise<HydraNivoAuthResult>{
@@ -81,7 +78,7 @@ export async function createHydraWithNivo():Promise<HydraNivoAuthResult>{
   const recoveryCode=typeof data.recoveryCode==="string"?data.recoveryCode:"";
   const integrationToken=typeof data.integrationToken==="string"?data.integrationToken:"";
   if(!userId||!accessCode||!recoveryCode||!integrationToken)throw new Error("Não foi possível criar a conta Nivo.");
-  const account=await ensureLocalLinkedAccount(userId,"user",integrationToken);
+  const account=await ensureLocalLinkedAccount(userId,"user",integrationToken,false);
   await syncHydraFarmToNivo(account).catch(()=>undefined);
   return {account,issued:{accessCode,recoveryCode}};
 }
