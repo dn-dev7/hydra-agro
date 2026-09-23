@@ -40,7 +40,6 @@ import {
 } from "../services/code-auth-service";
 import {
   createHydraWithNivo,
-  loginHydraAdminCode,
   loginHydraWithNivo,
   syncHydraFarmToNivo,
   type NivoIssuedCodes,
@@ -135,8 +134,11 @@ export function useHydraStore() {
   const bootId = useRef(0);
 
   const applyAccount = useCallback((next: HydraAccount | null) => {
-    accountRef.current = next;
-    setAccount(next);
+    // Contas locais e vinculadas ao Nivo não podem conceder privilégios de
+    // administração do aplicativo. Essas permissões vêm do servidor do Hydra.
+    const verified = next && localCodeUserRef.current ? { ...next, role: "user" as const } : next;
+    accountRef.current = verified;
+    setAccount(verified);
   }, []);
 
   const refreshPublicContent = useCallback(async () => {
@@ -384,17 +386,6 @@ export function useHydraStore() {
       return { result: { ok: false, message: friendlyError(error) } };
     }
   }, []);
-
-  const loginAdminCode = useCallback(async (code: string): Promise<AuthResult> => {
-    try {
-      const linked = await loginHydraAdminCode(code);
-      applyLinkedLocalAccount(linked);
-      return { ok: true, message: "Painel administrativo liberado." };
-    } catch (error) {
-      setReady(true);
-      return { ok: false, message: friendlyError(error) };
-    }
-  }, [applyLinkedLocalAccount]);
 
   const loginCode = useCallback(async (code: string): Promise<AuthResult> => {
     try {
@@ -692,7 +683,6 @@ export function useHydraStore() {
     loginCode,
     loginNivo,
     createNivoLinkedAccount,
-    loginAdminCode,
     activateCreatedCodeAccount,
     loginGoogle,
     loginStaff,
