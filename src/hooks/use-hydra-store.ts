@@ -378,14 +378,12 @@ export function useHydraStore() {
   const createNivoLinkedAccount = useCallback(async (): Promise<{ result: AuthResult; issued?: NivoIssuedCodes; userId?: string }> => {
     try {
       const { account: linked, issued } = await createHydraWithNivo();
-      applyLinkedLocalAccount(linked);
-      try { window.sessionStorage.setItem("hydra-code-onboarding", linked.id); } catch { /* segue sem storage */ }
       return { result: { ok: true, message: "Conta Nivo criada e conectada." }, issued, userId: linked.id };
     } catch (error) {
       setReady(true);
       return { result: { ok: false, message: friendlyError(error) } };
     }
-  }, [applyLinkedLocalAccount]);
+  }, []);
 
   const loginAdminCode = useCallback(async (code: string): Promise<AuthResult> => {
     try {
