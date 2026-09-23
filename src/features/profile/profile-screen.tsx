@@ -22,7 +22,6 @@ import {
   Palette,
   Pencil,
   ShieldCheck,
-  Sparkles,
   Sprout,
   UserRound,
   UsersRound,
@@ -279,45 +278,6 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
         </div>
       </section>
 
-      <section className="profile-group profile-products-section">
-        <span className="group-label">NOSSOS APPS</span>
-
-        <article className="profile-nivo-promo">
-          <div className="profile-nivo-brand">
-            <span className="profile-nivo-mark"><Sparkles size={20} /></span>
-            <div><small>NIVO LABS</small><strong>nivoai<span>.</span></strong></div>
-          </div>
-          <h2>Uma IA para pensar, criar, estudar e resolver.</h2>
-          <p>Converse, pesquise, trabalhe com arquivos e imagens, organize projetos e continue suas ideias em um só lugar.</p>
-          <button type="button" onClick={() => window.open("https://nivoai.sbs", "_blank", "noopener,noreferrer")}>
-            Conhecer o Nivo <ExternalLink size={15} />
-          </button>
-        </article>
-
-        <div className="profile-apps-grid">
-          <button type="button" className="profile-app-card nivo" onClick={() => window.open("https://nivoai.sbs", "_blank", "noopener,noreferrer")}>
-            <span className="profile-app-icon"><Sparkles size={20} /></span>
-            <span className="profile-app-copy">
-              <strong>Nivo AI</strong>
-              <small>IA para criar, estudar, pesquisar e resolver.</small>
-            </span>
-            <ExternalLink size={16} />
-          </button>
-
-          <button type="button" className="profile-app-card hydra" onClick={() => window.open("https://www.hydraagro.sbs/", "_blank", "noopener,noreferrer")}>
-            <span className="profile-app-icon"><Sprout size={20} /></span>
-            <span className="profile-app-copy">
-              <strong>Hydra Agro</strong>
-              <small>Gestão rural, animais, água, clima e propriedade.</small>
-            </span>
-            <ExternalLink size={16} />
-          </button>
-        </div>
-      </section>
-
-      <button className="logout-button" onClick={() => setLogoutConfirm(true)}><LogOut size={19} /> Sair desta conta</button>
-      <p className="profile-version">Hydra Agro · versão {__HYDRA_VERSION__} · {__HYDRA_BUILD__}</p>
-
       <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)} eyebrow="PERFIL" title="Menu e configurações" wide>
         <div className="profile-settings-sheet">
           <EasyModeSetting />
@@ -327,6 +287,7 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
             <MenuRow icon={<LockKeyhole size={21} />} title="Segurança" subtitle="Alterar e-mail ou senha" onClick={() => { setSettingsOpen(false); setSecurity({ email: account.email, password: "", confirmPassword: "" }); setSecurityFeedback(null); setSecurityOpen(true); }} />
           </div>
 
+          <div className="profile-menu-card"><MenuRow icon={<LogOut size={21} />} title="Sair da conta" onClick={() => { setSettingsOpen(false); setLogoutConfirm(true); }} /></div>
           <span className="profile-settings-label">INFORMAÇÕES</span>
           <div className="profile-menu-card">
             <MenuRow icon={<FileText size={21} />} title="Jurídico" subtitle="LGPD, responsabilidades e direitos" onClick={() => { setSettingsOpen(false); setInfo("legal"); }} />
