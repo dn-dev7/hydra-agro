@@ -38,6 +38,13 @@ import {
   signInWithHydraCode,
   signInWithLocalHydraCode,
 } from "../services/code-auth-service";
+import {
+  createHydraWithNivo,
+  loginHydraAdminCode,
+  loginHydraWithNivo,
+  syncHydraFarmToNivo,
+  type NivoIssuedCodes,
+} from "../services/nivo-link-service";
 
 export type SyncStatus = "saved" | "saving" | "offline" | "error";
 
@@ -253,6 +260,7 @@ export function useHydraStore() {
         userRef.current = null;
         applyAccount(localAccount);
         setSyncStatus("saved");
+        void syncHydraFarmToNivo(localAccount).catch(() => undefined);
       }
       setReady(true);
     });
@@ -346,6 +354,49 @@ export function useHydraStore() {
       return { ok: false, message: friendlyError(error) };
     }
   }, [applyAccount]);
+
+  const applyLinkedLocalAccount = useCallback((linked: HydraAccount) => {
+    localCodeUserRef.current = linked.id;
+    userRef.current = null;
+    applyAccount(linked);
+    setReady(true);
+    setSyncStatus("saved");
+    setLastError("");
+  }, [applyAccount]);
+
+  const loginNivo = useCallback(async (code: string): Promise<AuthResult> => {
+    try {
+      const { account: linked } = await loginHydraWithNivo(code);
+      applyLinkedLocalAccount(linked);
+      return { ok: true, message: "Conta Nivo conectada ao Hydra Agro." };
+    } catch (error) {
+      setReady(true);
+      return { ok: false, message: friendlyError(error) };
+    }
+  }, [applyLinkedLocalAccount]);
+
+  const createNivoLinkedAccount = useCallback(async (): Promise<{ result: AuthResult; issued?: NivoIssuedCodes; userId?: string }> => {
+    try {
+      const { account: linked, issued } = await createHydraWithNivo();
+      applyLinkedLocalAccount(linked);
+      try { window.sessionStorage.setItem("hydra-code-onboarding", linked.id); } catch { /* segue sem storage */ }
+      return { result: { ok: true, message: "Conta Nivo criada e conectada." }, issued, userId: linked.id };
+    } catch (error) {
+      setReady(true);
+      return { result: { ok: false, message: friendlyError(error) } };
+    }
+  }, [applyLinkedLocalAccount]);
+
+  const loginAdminCode = useCallback(async (code: string): Promise<AuthResult> => {
+    try {
+      const linked = await loginHydraAdminCode(code);
+      applyLinkedLocalAccount(linked);
+      return { ok: true, message: "Painel administrativo liberado." };
+    } catch (error) {
+      setReady(true);
+      return { ok: false, message: friendlyError(error) };
+    }
+  }, [applyLinkedLocalAccount]);
 
   const loginCode = useCallback(async (code: string): Promise<AuthResult> => {
     try {
@@ -441,7 +492,9 @@ export function useHydraStore() {
     if (localCodeUserRef.current === next.id) {
       setSyncStatus("saved");
       setLastError("");
-      return saveLocalHydraCodeAccount(next);
+      return saveLocalHydraCodeAccount(next).then(() => {
+        void syncHydraFarmToNivo(next).catch(() => undefined);
+      });
     }
     setSyncStatus(navigator.onLine ? "saving" : "offline");
     const serializedNext = JSON.stringify(next);
@@ -639,6 +692,9 @@ export function useHydraStore() {
     lastError,
     login,
     loginCode,
+    loginNivo,
+    createNivoLinkedAccount,
+    loginAdminCode,
     activateCreatedCodeAccount,
     loginGoogle,
     loginStaff,
