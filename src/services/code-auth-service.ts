@@ -35,6 +35,15 @@ export function codeHasLength(value: string, length: number) {
   return value.replace(/-/g, "").length === length;
 }
 
+export async function isHydraCodeAuthAvailable() {
+  try {
+    const result = await invoke<{ ok: boolean; mode?: string }>({ action: "health" });
+    return result.ok === true;
+  } catch {
+    return false;
+  }
+}
+
 export function createHydraCodeAccount() {
   return invoke<IssuedHydraCodes>({ action: "create" });
 }
