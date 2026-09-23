@@ -1,0 +1,75 @@
+/* Autenticação por código: hierarquia e ritmo do Nivo, cores exclusivas Hydra. */
+html body #root .hydra-root .hydra-code-entry {
+  --ha-ink:#143d2c;
+  --ha-forest:#0b5136;
+  --ha-orange:#ff922e;
+  --ha-paper:#fbfaf6;
+  --ha-muted:#667b70;
+  --ha-border:#dce8df;
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  flex-direction:column;
+  min-height:100dvh;
+  width:100%;
+  padding:max(24px,env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) max(25px,env(safe-area-inset-bottom,0px)) max(22px,env(safe-area-inset-left,0px));
+  overflow-y:auto;
+  background:radial-gradient(ellipse at 80% 17%,rgba(114,169,127,.10),transparent 42%),radial-gradient(ellipse at 12% 90%,rgba(255,146,46,.07),transparent 39%),var(--ha-paper);
+  color:var(--ha-ink);
+  font-family:Manrope,Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+html body #root .hydra-root .hydra-code-entry,
+html body #root .hydra-root .hydra-code-entry * { box-sizing:border-box; }
+.hydra-code-entry .hydra-code-topbar{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:900px;margin:0 auto;min-height:42px}
+.hydra-code-entry .hydra-code-wordmark{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;letter-spacing:-.06em;text-transform:lowercase;color:var(--ha-forest)}
+.hydra-code-entry .hydra-code-wordmark b{color:var(--ha-orange)}
+.hydra-code-entry .hydra-code-wordmark svg{width:32px;height:32px;display:block}
+.hydra-code-entry button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hydra-code-entry button:disabled{cursor:not-allowed;opacity:.55}
+.hydra-code-entry .hydra-code-close,.hydra-code-entry .hydra-code-back{display:grid;place-items:center;flex-shrink:0;background:#eff4ee;border:1px solid var(--ha-border);color:var(--ha-forest);height:43px;width:43px;border-radius:14px}
+.hydra-code-entry .hydra-code-welcome-mark{display:grid;place-items:center;width:84px;height:84px;border-radius:27px;background:#e9f2e7;box-shadow:0 10px 30px rgba(11,81,54,.06);margin-bottom:27px}
+.hydra-code-entry .hydra-code-welcome-mark svg{width:53px;height:53px}
+.hydra-code-entry .hydra-code-intro{width:min(100%,550px);margin:auto;animation:ha-code-enter .4s ease both}
+.hydra-code-entry .hydra-code-eyebrow{display:block;color:#417b5c;font-size:11px;font-weight:800;letter-spacing:.15em;line-height:1.35}
+.hydra-code-entry .hydra-code-intro h1{font-family:Sora,Manrope,sans-serif;font-size:clamp(32px,8vw,53px);line-height:1.17;letter-spacing:-.055em;margin:17px 0 17px;color:var(--ha-ink)}
+.hydra-code-entry .hydra-code-intro h1 em{font-style:normal;color:var(--ha-orange)}
+.hydra-code-entry .hydra-code-intro p{font-size:15px;line-height:1.65;color:var(--ha-muted);max-width:430px;margin:0}
+.hydra-code-entry .hydra-code-welcome-actions{display:grid;gap:12px;width:min(100%,520px);margin:25px auto max(16px,env(safe-area-inset-bottom,0px))}
+.hydra-code-entry .hydra-code-primary,.hydra-code-entry .hydra-code-secondary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;border-radius:18px;font-size:15px;font-weight:800;border:1px solid transparent;transition:transform .17s ease,box-shadow .17s ease,background .17s ease}
+.hydra-code-entry .hydra-code-primary{background:var(--ha-forest);color:white;box-shadow:0 10px 24px rgba(8,75,46,.17)}
+.hydra-code-entry .hydra-code-primary:not(:disabled):active{transform:scale(.985)}
+.hydra-code-entry .hydra-code-primary:not(:disabled):hover{background:#0c603d}
+.hydra-code-entry .hydra-code-secondary{background:#fff;color:var(--ha-forest);border-color:var(--ha-border)}
+.hydra-code-entry .hydra-code-muted-button{display:flex;justify-content:center;align-items:center;gap:8px;border:0;background:transparent;color:var(--ha-muted);font-size:13px;font-weight:750;min-height:40px}
+.hydra-code-entry .hydra-code-muted-button.inline{justify-content:flex-start;margin:11px 0 0;padding:0;min-height:30px}
+.hydra-code-entry .hydra-code-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;margin:26px auto 10px;width:min(100%,380px);height:52px;background:#edf3ec;border:1px solid var(--ha-border);border-radius:17px}
+.hydra-code-entry .hydra-code-tabs button{border:0;background:transparent;color:#718478;font-size:13px;font-weight:750;border-radius:13px}
+.hydra-code-entry .hydra-code-tabs button.active{background:var(--ha-forest);color:#fff;box-shadow:0 6px 15px rgba(11,81,54,.13)}
+.hydra-code-entry .hydra-code-panel{display:flex;flex-direction:column;flex:1;width:min(100%,520px);min-height:380px;margin:0 auto}
+.hydra-code-entry .hydra-code-question{margin:auto 0;animation:ha-code-enter .3s ease both;padding:22px 0 28px}
+.hydra-code-entry .hydra-code-question h1{font-family:Sora,Manrope,sans-serif;color:var(--ha-ink);font-size:clamp(27px,7vw,40px);line-height:1.22;letter-spacing:-.05em;margin:13px 0 13px}
+.hydra-code-entry .hydra-code-question>p:not(.hydra-code-error){color:var(--ha-muted);font-size:14px;line-height:1.6;margin:0 0 25px}
+.hydra-code-entry .hydra-code-label{display:block;color:var(--ha-ink);font-size:12px;font-weight:750;margin:0 0 9px}
+.hydra-code-entry .hydra-code-input{width:100%;max-width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(14px,4vw,19px);letter-spacing:.035em;font-weight:700;text-transform:uppercase;height:64px;padding:0 15px;border-radius:17px;border:1.5px solid var(--ha-border);background:#fff;color:var(--ha-ink);outline:0;box-shadow:0 10px 25px rgba(15,62,39,.035)}
+.hydra-code-entry .hydra-code-input::placeholder{color:#94a69a;font-size:.82em}
+.hydra-code-entry .hydra-code-input:focus{border-color:var(--ha-forest);box-shadow:0 0 0 4px rgba(14,98,61,.085)}
+.hydra-code-entry .hydra-code-hint{font-size:12px!important;margin:10px 0!important}
+.hydra-code-entry .hydra-code-error{padding:12px 14px;border-radius:12px;background:#fff0ec;color:#a13b23;font-size:13px;line-height:1.5;margin:16px 0 0}
+.hydra-code-entry .hydra-code-explainer{display:grid;grid-template-columns:29px 1fr;align-items:center;column-gap:12px;row-gap:13px;padding:20px 16px;background:rgba(232,244,234,.6);border:1px solid var(--ha-border);border-radius:18px}
+.hydra-code-entry .hydra-code-explainer span{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#d9ebdd;color:var(--ha-forest);font-weight:800;font-size:12px}
+.hydra-code-entry .hydra-code-explainer p{margin:0;font-size:13px;line-height:1.45;color:#456857}
+.hydra-code-entry .hydra-code-issued{display:grid;gap:12px;max-width:100%;margin:22px 0 0}
+.hydra-code-entry .hydra-code-issued>div{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid var(--ha-border);padding:16px;border-radius:18px}
+.hydra-code-entry .hydra-code-issued small{width:100%;font-size:11px;font-weight:800;color:#6e8776}
+.hydra-code-entry .hydra-code-issued strong{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(12px,3.2vw,16px);color:var(--ha-ink);letter-spacing:.03em;overflow-wrap:anywhere;flex:1;min-width:150px}
+.hydra-code-entry .hydra-code-issued button{display:flex;gap:5px;align-items:center;background:#eaf3e9;border:0;border-radius:9px;padding:9px;color:var(--ha-forest);font-size:11px;font-weight:800}
+.hydra-code-entry .hydra-code-issued>p{display:flex;align-items:flex-start;gap:9px;color:#4e6d58;font-size:12px;line-height:1.55;margin:5px 0 0}
+.hydra-code-entry .hydra-code-issued>p svg{flex-shrink:0}
+.hydra-code-entry .hydra-code-actions{display:flex;align-items:center;gap:12px;padding:8px 0 0;margin-top:auto}
+.hydra-code-entry .hydra-code-actions .hydra-code-primary{flex:1;width:auto}
+.hydra-code-entry .hydra-code-footer{display:flex;align-items:center;justify-content:center;gap:7px;text-align:center;font-size:11px;color:#899b8d;max-width:500px;width:100%;margin:18px auto 0}
+.hydra-code-entry :focus-visible{outline:2px solid var(--ha-orange);outline-offset:3px}
+@keyframes ha-code-enter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(max-height:670px){html body #root .hydra-root .hydra-code-entry{min-height:100dvh}.hydra-code-entry .hydra-code-question{margin:35px 0 24px}.hydra-code-entry .hydra-code-tabs{margin-top:15px}.hydra-code-entry .hydra-code-intro{margin:42px auto 25px}}
+@media(prefers-reduced-motion:reduce){.hydra-code-entry *{animation:none!important;transition:none!important}}
