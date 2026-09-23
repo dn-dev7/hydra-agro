@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, Check, Copy, KeyRound, Leaf, LifeBuoy, LogIn, ShieldCheck, UserPlus, UsersRound, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Copy, KeyRound, Leaf, LifeBuoy, LogIn, ShieldCheck, Sparkles, UserPlus, UsersRound, X } from "lucide-react";
 import { HydraMark } from "../../components/brand";
 import type { AuthResult } from "../../lib/hydra-types";
+import type { NivoIssuedCodes } from "../../services/nivo-link-service";
 import {
   codeHasLength,
   createHydraCodeAccount,
@@ -13,12 +14,15 @@ import {
 } from "../../services/code-auth-service";
 import "./hydra-code-auth.css";
 
-type View = "landing" | "access" | "create" | "recover" | "issued" | "staff";
+type View = "landing" | "access" | "create" | "recover" | "issued" | "staff" | "nivo" | "nivo-issued" | "admin";
 type Props = {
   initialView?: "landing" | "auth";
   onCodeLogin: (code: string) => Promise<AuthResult>;
   onCreatedLocalAccount: (userId: string) => Promise<AuthResult>;
   onStaffLogin: (code: string) => Promise<AuthResult>;
+  onNivoLogin: (code: string) => Promise<AuthResult>;
+  onNivoCreate: () => Promise<{ result: AuthResult; issued?: NivoIssuedCodes; userId?: string }>;
+  onAdminLogin: (code: string) => Promise<AuthResult>;
 };
 
 function formatStaff(value: string) {
@@ -28,11 +32,15 @@ function formatStaff(value: string) {
   return compact ? "HA-" + (body.match(/.{1,4}/g) || []).join("-") : "";
 }
 
-export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCreatedLocalAccount, onStaffLogin }: Props) {
+export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCreatedLocalAccount, onStaffLogin, onNivoLogin, onNivoCreate, onAdminLogin }: Props) {
   const [view, setView] = useState<View>(initialView === "auth" ? "access" : "landing");
   const [code, setCode] = useState("");
   const [recovery, setRecovery] = useState("");
   const [staff, setStaff] = useState("");
+  const [nivoCode, setNivoCode] = useState("");
+  const [adminCode, setAdminCode] = useState("");
+  const [nivoIssued, setNivoIssued] = useState<NivoIssuedCodes | null>(null);
+  const [nivoUserId, setNivoUserId] = useState("");
   const [issued, setIssued] = useState<IssuedHydraCodes | null>(null);
   const [issuedFrom, setIssuedFrom] = useState<"create" | "recover">("create");
   const [busy, setBusy] = useState(false);
@@ -94,6 +102,86 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
     }
   }
 
+  async function loginWithNivo() {
+    if (busy) return;
+    if (!codeHasLength(nivoCode, 16)) {
+      setError("Digite o código Nivo completo.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const result = await onNivoLogin(nivoCode);
+      if (!result.ok) {
+        setError(result.message);
+        setBusy(false);
+      }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Não foi possível entrar com o Nivo.");
+      setBusy(false);
+    }
+  }
+
+  async function createWithNivo() {
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const response = await onNivoCreate();
+      if (!response.result.ok || !response.issued || !response.userId) {
+        setError(response.result.message);
+        setBusy(false);
+        return;
+      }
+      setNivoIssued(response.issued);
+      setNivoUserId(response.userId);
+      setView("nivo-issued");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Não foi possível criar a conta Nivo.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function continueNivoAccount() {
+    if (busy || !nivoUserId) return;
+    setBusy(true);
+    setError("");
+    try {
+      window.sessionStorage.setItem("hydra-code-onboarding", nivoUserId);
+      const result = await onCreatedLocalAccount(nivoUserId);
+      if (!result.ok) {
+        window.sessionStorage.removeItem("hydra-code-onboarding");
+        setError(result.message);
+        setBusy(false);
+      }
+    } catch (caught) {
+      window.sessionStorage.removeItem("hydra-code-onboarding");
+      setError(caught instanceof Error ? caught.message : "Não foi possível abrir a conta.");
+      setBusy(false);
+    }
+  }
+
+  async function loginAdmin() {
+    if (busy) return;
+    if (!codeHasLength(adminCode, 16)) {
+      setError("Digite o código administrativo completo.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const result = await onAdminLogin(adminCode);
+      if (!result.ok) {
+        setError(result.message);
+        setBusy(false);
+      }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Não foi possível abrir o painel.");
+      setBusy(false);
+    }
+  }
+
   async function copy(value: string, kind: "access" | "recovery") {
     try {
       await navigator.clipboard.writeText(value);
@@ -115,7 +203,11 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
       <div className="hydra-code-welcome-actions">
         <button className="hydra-code-primary" type="button" onClick={() => switchView("access")}><LogIn size={18} /> Entrar <ArrowRight size={19} /></button>
         <button className="hydra-code-secondary" type="button" onClick={() => switchView("create")}><UserPlus size={18} /> Criar conta</button>
-        <button className="hydra-code-muted-button" type="button" onClick={() => switchView("staff")}><UsersRound size={17} /> Acesso de funcionário</button>
+        <button className="hydra-code-nivo" type="button" onClick={() => switchView("nivo")}><Sparkles size={18} /> Entrar com Nivo <ArrowRight size={18} /></button>
+        <div className="hydra-code-minor-actions">
+          <button className="hydra-code-muted-button" type="button" onClick={() => switchView("staff")}><UsersRound size={17} /> Funcionário</button>
+          <button className="hydra-code-muted-button" type="button" onClick={() => switchView("admin")}><ShieldCheck size={17} /> Painel adm</button>
+        </div>
       </div>
     </main>
   );
@@ -134,13 +226,15 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
         if (view === "create" || view === "recover") void issueCode(view);
         else if (view === "access") void signIn(code, false);
         else if (view === "staff") void signIn(staff, true);
+        else if (view === "nivo") void loginWithNivo();
+        else if (view === "admin") void loginAdmin();
       }}>
         <div className="hydra-code-question" key={view}>
           <span className="hydra-code-eyebrow">
-            {view === "access" ? "SEU ACESSO" : view === "create" ? "NOVO ACESSO" : view === "recover" ? "RECUPERAÇÃO" : view === "issued" ? "CÓDIGOS CRIADOS" : "ACESSO À PROPRIEDADE"}
+            {view === "access" ? "SEU ACESSO" : view === "create" ? "NOVO ACESSO" : view === "recover" ? "RECUPERAÇÃO" : view === "issued" ? "CÓDIGOS CRIADOS" : view === "nivo" ? "CONTA NIVO" : view === "nivo-issued" ? "CONTA NIVO CRIADA" : view === "admin" ? "ADMINISTRAÇÃO" : "ACESSO À PROPRIEDADE"}
           </span>
-          <h1>{view === "access" ? "Entre no Hydra Agro" : view === "create" ? "Crie sua conta" : view === "recover" ? "Recupere seu acesso" : view === "issued" ? "Guarde seus códigos" : "Código de funcionário"}</h1>
-          <p>{view === "access" ? "Digite o código privado da sua conta." : view === "create" ? "Sem e-mail e sem senha. Um código privado será gerado para sua conta." : view === "recover" ? "Use o código de recuperação que você recebeu ao criar sua conta." : view === "issued" ? "Seu código de acesso permite entrar. O de recuperação cria novos códigos se você perder o primeiro." : "Digite o código fornecido pelo dono da propriedade."}</p>
+          <h1>{view === "access" ? "Entre no Hydra Agro" : view === "create" ? "Crie sua conta" : view === "recover" ? "Recupere seu acesso" : view === "issued" ? "Guarde seus códigos" : view === "nivo" ? "Entre com o Nivo" : view === "nivo-issued" ? "Guarde seus códigos Nivo" : view === "admin" ? "Painel administrativo" : "Código de funcionário"}</h1>
+          <p>{view === "access" ? "Digite o código privado da sua conta." : view === "create" ? "Sem e-mail e sem senha. Um código privado será gerado para sua conta." : view === "recover" ? "Use o código de recuperação que você recebeu ao criar sua conta." : view === "issued" ? "Seu código de acesso permite entrar. O de recuperação cria novos códigos se você perder o primeiro." : view === "nivo" ? "Use o mesmo código da sua conta Nivo. A fazenda ficará vinculada ao Nivo e os dados resumidos poderão ser usados pela função Minha fazenda." : view === "nivo-issued" ? "Sua conta Nivo foi criada. Salve os dois códigos antes de continuar para o Hydra Agro." : view === "admin" ? "Digite o código privado de administração para abrir o painel do Hydra Agro." : "Digite o código fornecido pelo dono da propriedade."}</p>
 
           {view === "access" && <>
             <label className="hydra-code-label" htmlFor="hydra-access-code">Código de acesso</label>
@@ -166,6 +260,25 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
             <p className="hydra-code-hint">O dono da propriedade fornece seu código.</p>
           </>}
 
+          {view === "nivo" && <>
+            <label className="hydra-code-label" htmlFor="hydra-nivo-code">Código do Nivo</label>
+            <input id="hydra-nivo-code" autoFocus className="hydra-code-input" value={nivoCode} maxLength={19} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="XXXX-XXXX-XXXX-XXXX" onChange={(event) => { setNivoCode(formatHydraCode(event.target.value, 16)); setError(""); }} />
+            <div className="hydra-code-nivo-note"><Sparkles size={18} /><span>Ao vincular, o Nivo ganha a função <strong>Minha fazenda</strong> com o resumo autorizado do Hydra.</span></div>
+            <button className="hydra-code-muted-button inline" type="button" onClick={() => void createWithNivo()}><UserPlus size={16} /> Ainda não tenho Nivo · criar conta</button>
+          </>}
+
+          {view === "admin" && <>
+            <label className="hydra-code-label" htmlFor="hydra-admin-code">Código administrativo</label>
+            <input id="hydra-admin-code" autoFocus className="hydra-code-input" value={adminCode} maxLength={19} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="XXXX-XXXX-XXXX-XXXX" onChange={(event) => { setAdminCode(formatHydraCode(event.target.value, 16)); setError(""); }} />
+            <p className="hydra-code-hint">Este acesso abre o painel administrativo e não deve ser compartilhado.</p>
+          </>}
+
+          {view === "nivo-issued" && nivoIssued && <div className="hydra-code-issued hydra-code-issued-nivo" aria-live="polite">
+            <div><small>Código de acesso Nivo</small><strong>{nivoIssued.accessCode}</strong><button aria-label="Copiar código Nivo" type="button" onClick={() => void copy(nivoIssued.accessCode, "access")}>{copied === "access" ? <Check size={17} /> : <Copy size={17} />} {copied === "access" ? "Copiado" : "Copiar"}</button></div>
+            <div><small>Código de recuperação Nivo</small><strong>{nivoIssued.recoveryCode}</strong><button aria-label="Copiar recuperação Nivo" type="button" onClick={() => void copy(nivoIssued.recoveryCode, "recovery")}>{copied === "recovery" ? <Check size={17} /> : <Copy size={17} />} {copied === "recovery" ? "Copiado" : "Copiar"}</button></div>
+            <p><ShieldCheck size={17} /> O mesmo Nivo ficará vinculado à sua fazenda no Hydra Agro.</p>
+          </>}
+
           {view === "issued" && issued && <div className="hydra-code-issued" aria-live="polite">
             <div><small>Código de acesso</small><strong>{issued.accessCode}</strong><button aria-label="Copiar código de acesso" type="button" onClick={() => void copy(issued.accessCode, "access")}>{copied === "access" ? <Check size={17} /> : <Copy size={17} />} {copied === "access" ? "Copiado" : "Copiar"}</button></div>
             <div><small>Código de recuperação</small><strong>{issued.recoveryCode}</strong><button aria-label="Copiar código de recuperação" type="button" onClick={() => void copy(issued.recoveryCode, "recovery")}>{copied === "recovery" ? <Check size={17} /> : <Copy size={17} />} {copied === "recovery" ? "Copiado" : "Copiar"}</button></div>
@@ -174,10 +287,11 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
           {error && <p className="hydra-code-error" role="alert">{error}</p>}
         </div>
         <div className="hydra-code-actions">
-          <button className="hydra-code-back" type="button" aria-label="Voltar" disabled={busy || view === "issued"} onClick={() => switchView(view === "recover" || view === "staff" ? "access" : "landing")}><ArrowLeft size={19} /></button>
+          <button className="hydra-code-back" type="button" aria-label="Voltar" disabled={busy || view === "issued" || view === "nivo-issued"} onClick={() => switchView(view === "recover" ? "access" : "landing")}><ArrowLeft size={19} /></button>
           {view === "issued" ? <button className="hydra-code-primary" disabled={busy || !issued} type="button" onClick={() => { if (issued) void signIn(issued.accessCode, false, issuedFrom === "create"); }}>{busy ? "Entrando…" : "Já salvei, continuar"} <ArrowRight size={19} /></button>
-            : <button className="hydra-code-primary" disabled={busy || (view === "access" && !codeHasLength(code, 16)) || (view === "recover" && !codeHasLength(recovery, 24)) || (view === "staff" && staff.replace(/-/g, "").length !== 14)} type="submit">
-              {busy ? "Aguarde…" : view === "create" ? "Gerar meu código" : view === "recover" ? "Recuperar acesso" : "Entrar"} <ArrowRight size={19} />
+            : view === "nivo-issued" ? <button className="hydra-code-primary" disabled={busy || !nivoIssued || !nivoUserId} type="button" onClick={() => void continueNivoAccount()}>{busy ? "Abrindo…" : "Já salvei, continuar"} <ArrowRight size={19} /></button>
+            : <button className="hydra-code-primary" disabled={busy || (view === "access" && !codeHasLength(code, 16)) || (view === "recover" && !codeHasLength(recovery, 24)) || (view === "staff" && staff.replace(/-/g, "").length !== 14) || (view === "nivo" && !codeHasLength(nivoCode, 16)) || (view === "admin" && !codeHasLength(adminCode, 16))} type="submit">
+              {busy ? "Aguarde…" : view === "create" ? "Gerar meu código" : view === "recover" ? "Recuperar acesso" : view === "nivo" ? "Entrar com Nivo" : view === "admin" ? "Abrir painel" : "Entrar"} <ArrowRight size={19} />
             </button>}
         </div>
       </form>
