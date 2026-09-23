@@ -83,6 +83,14 @@ export async function clearActiveLocalHydraCodeAccount() {
   await Preferences.remove({ key: LOCAL_ACTIVE_KEY });
 }
 
+export async function activateLocalHydraCodeAccount(userId: string) {
+  const account = await readLocalAccount(userId);
+  if (!account) throw new Error("A conta criada não foi encontrada neste aparelho.");
+  await Preferences.set({ key: LOCAL_ACTIVE_KEY, value: userId });
+  return account;
+}
+
+
 export async function signInWithLocalHydraCode(code: string) {
   if (!codeHasLength(code, 16)) return null;
   const registry = await readLocalRegistry();
