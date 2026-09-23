@@ -30,6 +30,7 @@ import {
 import { capturePhoto, signedPrivateUrl, uploadPrivateImage } from "../services/media-service";
 import { signInWithStaffCode } from "../services/staff-service";
 import { backendConfigured, supabase } from "../services/supabase";
+import { signInWithHydraCode } from "../services/code-auth-service";
 
 export type SyncStatus = "saved" | "saving" | "offline" | "error";
 
@@ -310,6 +311,19 @@ export function useHydraStore() {
     }
   }, [loadUser]);
 
+  const loginCode = useCallback(async (code: string): Promise<AuthResult> => {
+    try {
+      setReady(false);
+      const data = await signInWithHydraCode(code);
+      if (!data.user) throw new Error("Sessão inválida.");
+      await loadUser(data.user);
+      return { ok: true, message: "Acesso liberado." };
+    } catch (error) {
+      setReady(true);
+      return { ok: false, message: friendlyError(error) };
+    }
+  }, [loadUser]);
+
   const loginStaff = useCallback(async (code: string): Promise<AuthResult> => {
     try {
       setReady(false);
@@ -568,6 +582,7 @@ export function useHydraStore() {
     syncStatus,
     lastError,
     login,
+    loginCode,
     loginGoogle,
     loginStaff,
     createAccount,
