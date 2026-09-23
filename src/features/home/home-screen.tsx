@@ -12,7 +12,6 @@ import {
   ClipboardCheck,
   Beef as Cow,
   History,
-  Leaf,
   Map,
   MessageSquareText,
   NotebookTabs,
@@ -28,7 +27,6 @@ import { refreshDailyBriefingCopy } from "../../services/daily-briefing";
 import { syncMissionProgress, type MissionProgress } from "../../services/mission-progress";
 import { requireSupabase } from "../../services/supabase";
 import { NutriCicloPanel } from "../family-farming/nutriciclo-panel";
-import { HomeScienceSummary } from "../climate/home-science-summary";
 import { HomePropertyMapPreview } from "./home-property-map-preview";
 import { HomeWaterSavingsCard } from "./home-water-savings-card";
 
@@ -99,7 +97,6 @@ export function HomeScreen({ account, navigate, announcements }: Props) {
       <button className="production-shortcut" onClick={() => navigate("production")} aria-label="Caderno da Produção" title="Agricultura familiar"><span><NotebookTabs size={23} /></span></button>
     </div>
 
-    <HomeScienceSummary account={account} onOpen={() => navigate("climate")} />
     {announcements.length > 0 && <section className="home-announcements" aria-label="Avisos do Hydra Agro">{announcements.slice(0, 3).map((announcement) => <article key={announcement.id} className={announcement.level}><span>{announcement.level === "critical" ? "IMPORTANTE" : announcement.level === "attention" ? "ATENÇÃO" : "AVISO"}</span><strong>{announcement.title}</strong><p>{announcement.body}</p></article>)}</section>}
 
     <HomePropertyMapPreview account={account} onOpen={openPropertyMap} />
@@ -111,7 +108,6 @@ export function HomeScreen({ account, navigate, announcements }: Props) {
       {!propertyReady && <button className="first-action-card" onClick={() => navigate("property")}><span><Plus size={24} /></span><div><strong>Complete a localização da propriedade</strong><p>UF, CEP e nome da propriedade.</p></div><ChevronRight size={21} /></button>}
       {pendingActivities.length > 0 && <div className="task-card"><div className="task-card-title"><ClipboardCheck size={21} /><strong>{pendingActivities.length === 1 ? "Tarefa pendente" : "Tarefas pendentes"}</strong><span>{pendingActivities.length}</span></div>{pendingActivities.slice(0, 3).map((activity) => <button key={activity.id} onClick={() => navigate("activities")}><span>{activity.category}</span><strong>{activity.title}</strong><ChevronRight size={19} /></button>)}</div>}
       {pendingActivities.length === 0 && pendingSetup.length > 0 && <div className="task-card"><div className="task-card-title"><ClipboardCheck size={21} /><strong>Primeiros passos</strong><span>{pendingSetup.length}</span></div>{pendingSetup.map((item) => <button key={item.label} onClick={() => navigate(item.route)}>{item.icon}<strong>{item.label}</strong><ChevronRight size={19} /></button>)}</div>}
-      {pendingActivities.length === 0 && pendingSetup.length === 0 && <div className="calm-state"><Leaf size={22} /><div><strong>Sem tarefas pendentes</strong><span>Os registros estão em dia.</span></div></div>}
     </section>
 
     <NutriCicloPanel account={account} open={nutriCicloOpen} onClose={() => setNutriCicloOpen(false)} />
