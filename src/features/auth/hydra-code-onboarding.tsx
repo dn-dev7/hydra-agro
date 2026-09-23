@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, Check, Mic, Sprout } from "lucide-react";
+import { Activity, ArrowLeft, ArrowRight, Beef, BookOpenText, BriefcaseBusiness, Check, ClipboardCheck, CloudSun, Droplets, Gauge, Grid2X2, Home, Lightbulb, MapPinned, MessageCircle, Mic, Nfc, SlidersHorizontal, Smile, Sparkles, Sprout, Wheat } from "lucide-react";
 import { HydraMark } from "../../components/brand";
 import "./hydra-code-onboarding.css";
 
@@ -15,10 +15,36 @@ const questions = [
   "Quando alguma coisa for complicada, como você prefere?",
   "O que você quer encontrar primeiro ao abrir o app?",
 ];
-const purposes = ["Gerenciar meus animais","Monitorar a água","Organizar tarefas","Acompanhar o clima","Identificar animais por NFC","Cuidar da propriedade","Registrar minha produção","Um pouco de tudo"];
-const tones = ["Direto ao ponto","Explicando tudo","Mais descontraído","Mais profissional","Me adaptar à situação"];
-const details = ["Explica bem simples","Pode entrar em detalhes","Só aprofunda quando eu pedir","Escolhe automaticamente"];
-const homes = ["Resumo da propriedade","Meus animais","Água da fazenda","Tarefas","Mapa da propriedade"];
+const purposes = [
+  { label: "Gerenciar meus animais", icon: Beef },
+  { label: "Monitorar a água", icon: Droplets },
+  { label: "Organizar tarefas", icon: ClipboardCheck },
+  { label: "Acompanhar o clima", icon: CloudSun },
+  { label: "Identificar animais por NFC", icon: Nfc },
+  { label: "Cuidar da propriedade", icon: Home },
+  { label: "Registrar minha produção", icon: Wheat },
+  { label: "Um pouco de tudo", icon: Grid2X2 },
+];
+const tones = [
+  { label: "Direto ao ponto", icon: Gauge },
+  { label: "Explicando tudo", icon: BookOpenText },
+  { label: "Mais descontraído", icon: Smile },
+  { label: "Mais profissional", icon: BriefcaseBusiness },
+  { label: "Me adaptar à situação", icon: SlidersHorizontal },
+];
+const details = [
+  { label: "Explica bem simples", icon: Lightbulb },
+  { label: "Pode entrar em detalhes", icon: BookOpenText },
+  { label: "Só aprofunda quando eu pedir", icon: MessageCircle },
+  { label: "Escolhe automaticamente", icon: Sparkles },
+];
+const homes = [
+  { label: "Resumo da propriedade", icon: Activity },
+  { label: "Meus animais", icon: Beef },
+  { label: "Água da fazenda", icon: Droplets },
+  { label: "Tarefas", icon: ClipboardCheck },
+  { label: "Mapa da propriedade", icon: MapPinned },
+];
 
 function QuestionText({ text }: { text: string }) {
   const [count, setCount] = useState(0);
@@ -120,12 +146,12 @@ export function HydraCodeOnboarding({ initialName = "", onFinish }: Props) {
         </div>)}
         {thinking ? <div className="hydra-questions-dots" aria-label="Preparando a próxima pergunta"><i /><i /><i /></div> :
           step === 1 ? <div className="hydra-questions-choices" role="group" aria-label={questions[1]}>
-            {purposes.map((option) => <button type="button" key={option} aria-pressed={uses.includes(option)} className={uses.includes(option) ? "selected" : ""} onClick={() => setUses((current) => current.includes(option) ? current.filter((v) => v !== option) : [...current, option])}><span>{option}</span><span className="hydra-choice-indicator">{uses.includes(option) && <Check size={15} />}</span></button>)}
+            {purposes.map(({ label, icon: Icon }) => <button type="button" key={label} aria-pressed={uses.includes(label)} className={uses.includes(label) ? "selected" : ""} onClick={() => setUses((current) => current.includes(label) ? current.filter((v) => v !== label) : [...current, label])}><span className="hydra-choice-content"><span className="hydra-choice-icon"><Icon size={18} /></span><span>{label}</span></span><span className="hydra-choice-indicator">{uses.includes(label) && <Check size={15} />}</span></button>)}
           </div> :
           step >= 2 && step <= 4 ? <div className="hydra-questions-choices" role="radiogroup" aria-label={questions[step]}>
-            {(step === 2 ? tones : step === 3 ? details : homes).map((option) => {
+            {(step === 2 ? tones : step === 3 ? details : homes).map(({ label, icon: Icon }) => {
               const current = step === 2 ? tone : step === 3 ? detail : home;
-              return <button type="button" key={option} role="radio" aria-checked={current === option} className={current === option ? "selected" : ""} onClick={() => choose(step === 2 ? "tone" : step === 3 ? "detail" : "home", option)}><span>{option}</span><span className="hydra-choice-indicator">{current === option && <Check size={15} />}</span></button>;
+              return <button type="button" key={label} role="radio" aria-checked={current === label} className={current === label ? "selected" : ""} onClick={() => choose(step === 2 ? "tone" : step === 3 ? "detail" : "home", label)}><span className="hydra-choice-content"><span className="hydra-choice-icon"><Icon size={18} /></span><span>{label}</span></span><span className="hydra-choice-indicator">{current === label && <Check size={15} />}</span></button>;
             })}
           </div> :
           step === 5 ? <div className="hydra-questions-complete"><Sprout size={23} /><h1>Pronto, {name.trim()}.</h1><p>Sua conta está preparada. Agora você pode começar a organizar sua propriedade.</p></div> : null}
