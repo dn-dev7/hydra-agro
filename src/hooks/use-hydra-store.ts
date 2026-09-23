@@ -31,6 +31,7 @@ import { capturePhoto, signedPrivateUrl, uploadPrivateImage } from "../services/
 import { signInWithStaffCode } from "../services/staff-service";
 import { backendConfigured, supabase } from "../services/supabase";
 import {
+  activateLocalHydraCodeAccount,
   clearActiveLocalHydraCodeAccount,
   loadActiveLocalHydraCodeAccount,
   saveLocalHydraCodeAccount,
@@ -331,6 +332,21 @@ export function useHydraStore() {
     }
   }, [loadUser]);
 
+  const activateCreatedCodeAccount = useCallback(async (userId: string): Promise<AuthResult> => {
+    try {
+      const localAccount = await activateLocalHydraCodeAccount(userId);
+      localCodeUserRef.current = localAccount.id;
+      userRef.current = null;
+      applyAccount(localAccount);
+      setReady(true);
+      setSyncStatus("saved");
+      setLastError("");
+      return { ok: true, message: "Conta criada." };
+    } catch (error) {
+      return { ok: false, message: friendlyError(error) };
+    }
+  }, [applyAccount]);
+
   const loginCode = useCallback(async (code: string): Promise<AuthResult> => {
     try {
       const localAccount = await signInWithLocalHydraCode(code);
@@ -623,6 +639,7 @@ export function useHydraStore() {
     lastError,
     login,
     loginCode,
+    activateCreatedCodeAccount,
     loginGoogle,
     loginStaff,
     createAccount,
