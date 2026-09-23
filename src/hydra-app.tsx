@@ -9,6 +9,8 @@ import { requestCloseTopOverlay, useAppOverlay, useModalNavigation } from "./com
 import { BackendSetupScreen, BannedScreen, PasswordRecoveryScreen, SyncBanner } from "./components/system-state";
 import { AppToastRegion } from "./components/ui";
 import { AuthFlow } from "./features/auth/auth-flow";
+import { HydraCodeAuthFlow } from "./features/auth/hydra-code-auth";
+import { HydraCodeOnboarding } from "./features/auth/hydra-code-onboarding";
 import { HomeScreen } from "./features/home/home-screen";
 import { PublicAnimalScreen, clearPublicAnimalParams, readPublicAnimalSnapshot } from "./features/herd/public-animal-card";
 import { StaffHomeScreen } from "./features/staff/staff-home-screen";
@@ -36,6 +38,8 @@ const FamilyFarmingScreen = lazy(() => import("./features/family-farming/family-
 const AdminScreen = lazy(() => import("./features/admin/admin-screen").then((module) => ({ default: module.AdminScreen })));
 const ClimateScienceScreen = lazy(() => import("./features/climate/climate-science-screen").then((module) => ({ default: module.ClimateScienceScreen })));
 const ResearchImpactScreen = lazy(() => import("./features/research/research-impact-screen").then((module) => ({ default: module.ResearchImpactScreen })));
+
+const codeAuthEnabled = import.meta.env.VITE_HYDRA_CODE_AUTH === "true";
 
 type NavTab = { id: AppRoute; label: string; icon: typeof Home };
 
@@ -69,10 +73,12 @@ export default function HydraApp() {
   const [splash, setSplash] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
   const [returnToLogin, setReturnToLogin] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(false);
   async function logoutToLogin() {
     if (loggingOut) return;
     setLoggingOut(true);
     setReturnToLogin(true);
+    setOnboardingDone(false);
     try { await store.logout(); setRoute("home"); setQuickOpen(false); }
     finally { setLoggingOut(false); }
   }
@@ -337,11 +343,31 @@ export default function HydraApp() {
   if (!store.ready) return splashLayer;
 
   if (loggingOut) return <main className="auth-logout-status" role="status" aria-live="polite"><span>Saindo…</span><p>Encerrando sua sessão</p></main>;
-  if (!store.account) return <><AuthFlow initialView={returnToLogin ? "auth" : "landing"} onLogin={store.login} onGoogleLogin={store.loginGoogle} onStaffLogin={store.loginStaff} onSignup={store.createAccount} onResetPassword={store.resetPassword} />{splashLayer}</>;
+  if (!store.account) return <>{codeAuthEnabled ? <HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onStaffLogin={store.loginStaff} /> : <AuthFlow initialView={returnToLogin ? "auth" : "landing"} onLogin={store.login} onGoogleLogin={store.loginGoogle} onStaffLogin={store.loginStaff} onSignup={store.createAccount} onResetPassword={store.resetPassword} />}{splashLayer}</>;
   if (store.account.bannedAt) return <><BannedScreen reason={store.account.banReason} logout={logoutToLogin} />{splashLayer}</>;
   if (passwordRecovery) return <><PasswordRecoveryScreen save={async (password) => { const result = await store.changeCredentials({ password }); if (result.ok) window.setTimeout(() => setPasswordRecovery(false), 650); return result; }} logout={async () => { setPasswordRecovery(false); await logoutToLogin(); }} />{splashLayer}</>;
 
   const account = store.account;
+  let pendingCodeOnboarding = false;
+  if (codeAuthEnabled && !onboardingDone && account.access.kind !== "staff") {
+    try {
+      pendingCodeOnboarding = window.sessionStorage.getItem("hydra-code-onboarding") === account.id;
+    } catch { /* Ambiente sem storage: preservar acesso à conta. */ }
+  }
+  if (pendingCodeOnboarding) {
+    return <HydraCodeOnboarding initialName={account.profile.name} onFinish={async (preferences) => {
+      await store.updateAccount((current) => ({
+        ...current,
+        profile: { ...current.profile, name: preferences.name },
+      }), { requireRemote: true });
+      try {
+        window.localStorage.setItem("hydra-code-preferences:" + account.id, JSON.stringify(preferences));
+        window.sessionStorage.removeItem("hydra-code-onboarding");
+      } catch { /* Preferências de UI não bloqueiam o acesso. */ }
+      setOnboardingDone(true);
+      setRoute("home");
+    }} />;
+  }
   const isStaff = account.access.kind === "staff";
   const canOpenAnimalManagement = !isStaff || account.access.staffRole === "manager";
 
