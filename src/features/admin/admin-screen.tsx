@@ -77,17 +77,10 @@ export function AdminScreen({ account, onBack }: { account: HydraAccount; onBack
   const [notification, setNotification] = useState({ title: "", body: "" });
   const [announcement, setAnnouncement] = useState<Announcement | null>(null);
   const [link, setLink] = useState<AppLink | null>(null);
-  const localAdmin = account.id === "hydra-admin-owner-v1" || (account.id === "nivo-nivo-owner-account-v1" && account.role === "owner");
 
   async function refresh() {
     setLoading(true);
     setError("");
-    if (localAdmin) {
-      setData(emptyData);
-      setPosts([]);
-      setLoading(false);
-      return;
-    }
     try {
       const [dashboard, moderation] = await Promise.all([loadAdminData(), loadModerationPosts()]);
       setData(dashboard);
@@ -221,7 +214,7 @@ export function AdminScreen({ account, onBack }: { account: HydraAccount; onBack
         action={<button className="icon-button accent" onClick={() => void refresh()} aria-label="Atualizar painel" disabled={loading}><RefreshCw size={19} /></button>}
       />
 
-      <div className="admin-owner-strip"><ShieldCheck size={18} /><div><strong>{account.role === "owner" ? "Proprietário do aplicativo" : "Equipe administrativa"}</strong><small>{localAdmin ? "Acesso administrativo por código · dados remotos serão conectados quando o Supabase do Hydra estiver ativo" : `Permissão verificada no servidor para ${account.email}`}</small></div></div>
+      <div className="admin-owner-strip"><ShieldCheck size={18} /><div><strong>{account.role === "owner" ? "Proprietário do aplicativo" : "Equipe administrativa"}</strong><small>{`Permissão verificada no servidor para ${account.email}`}</small></div></div>
 
       <div className="admin-tabs" role="tablist" aria-label="Seções administrativas">
         {([
