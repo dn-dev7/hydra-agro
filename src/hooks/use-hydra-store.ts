@@ -30,7 +30,13 @@ import {
 import { capturePhoto, signedPrivateUrl, uploadPrivateImage } from "../services/media-service";
 import { signInWithStaffCode } from "../services/staff-service";
 import { backendConfigured, supabase } from "../services/supabase";
-import { signInWithHydraCode } from "../services/code-auth-service";
+import {
+  clearActiveLocalHydraCodeAccount,
+  loadActiveLocalHydraCodeAccount,
+  saveLocalHydraCodeAccount,
+  signInWithHydraCode,
+  signInWithLocalHydraCode,
+} from "../services/code-auth-service";
 
 export type SyncStatus = "saved" | "saving" | "offline" | "error";
 
@@ -116,6 +122,7 @@ export function useHydraStore() {
   const [lastError, setLastError] = useState("");
   const accountRef = useRef<HydraAccount | null>(null);
   const userRef = useRef<User | null>(null);
+  const localCodeUserRef = useRef<string | null>(null);
   const syncQueue = useRef<Promise<void>>(Promise.resolve());
   const bootId = useRef(0);
 
@@ -125,7 +132,7 @@ export function useHydraStore() {
   }, []);
 
   const refreshPublicContent = useCallback(async () => {
-    if (!backendConfigured || !accountRef.current || accountRef.current.bannedAt) return;
+    if (!backendConfigured || !accountRef.current || accountRef.current.bannedAt || localCodeUserRef.current) return;
     try {
       const content = await loadPublicAdminContent();
       setAnnouncements(content.announcements);
@@ -231,16 +238,31 @@ export function useHydraStore() {
       return;
     }
 
-    void supabase.auth.getSession().then(({ data }) => {
+    void supabase.auth.getSession().then(async ({ data }) => {
       if (!active) return;
-      if (data.session?.user) void loadUser(data.session.user);
-      else setReady(true);
+      if (data.session?.user) {
+        localCodeUserRef.current = null;
+        void loadUser(data.session.user);
+        return;
+      }
+      const localAccount = await loadActiveLocalHydraCodeAccount();
+      if (!active) return;
+      if (localAccount) {
+        localCodeUserRef.current = localAccount.id;
+        userRef.current = null;
+        applyAccount(localAccount);
+        setSyncStatus("saved");
+      }
+      setReady(true);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       window.setTimeout(() => {
         if (!active) return;
-        if (event === "SIGNED_OUT" || !session?.user) {
+        if (session?.user) {
+          localCodeUserRef.current = null;
+          if (session.user.id !== userRef.current?.id) void loadUser(session.user);
+        } else if (!localCodeUserRef.current) {
           bootId.current += 1;
           userRef.current = null;
           applyAccount(null);
@@ -248,8 +270,6 @@ export function useHydraStore() {
           setLinks([]);
           setSyncStatus("saved");
           setReady(true);
-        } else if (session.user.id !== userRef.current?.id) {
-          void loadUser(session.user);
         }
       }, 0);
     });
@@ -313,8 +333,19 @@ export function useHydraStore() {
 
   const loginCode = useCallback(async (code: string): Promise<AuthResult> => {
     try {
+      const localAccount = await signInWithLocalHydraCode(code);
+      if (localAccount) {
+        localCodeUserRef.current = localAccount.id;
+        userRef.current = null;
+        applyAccount(localAccount);
+        setReady(true);
+        setSyncStatus("saved");
+        setLastError("");
+        return { ok: true, message: "Acesso liberado." };
+      }
       const data = await signInWithHydraCode(code);
       if (!data.user) throw new Error("Sessão inválida.");
+      localCodeUserRef.current = null;
       await loadUser(data.user);
       if (accountRef.current?.id !== data.user.id) throw new Error("Não foi possível carregar sua conta. Tente novamente.");
       return { ok: true, message: "Acesso liberado." };
@@ -322,7 +353,7 @@ export function useHydraStore() {
       setReady(true);
       return { ok: false, message: friendlyError(error) };
     }
-  }, [loadUser]);
+  }, [applyAccount, loadUser]);
 
   const loginStaff = useCallback(async (code: string): Promise<AuthResult> => {
     try {
@@ -391,6 +422,11 @@ export function useHydraStore() {
       subscription: previous.subscription,
     };
     applyAccount(next);
+    if (localCodeUserRef.current === next.id) {
+      setSyncStatus("saved");
+      setLastError("");
+      return saveLocalHydraCodeAccount(next);
+    }
     setSyncStatus(navigator.onLine ? "saving" : "offline");
     const serializedNext = JSON.stringify(next);
     const localPersistence = Promise.all([
@@ -427,20 +463,24 @@ export function useHydraStore() {
 
   const logout = useCallback(async () => {
     const userId = userRef.current?.id ?? accountRef.current?.id;
+    const localUserId = localCodeUserRef.current;
     bootId.current += 1;
     try {
-      if (supabase) {
+      if (localUserId) {
+        await clearActiveLocalHydraCodeAccount();
+      } else if (supabase) {
         const { error } = await supabase.auth.signOut({ scope: "local" });
         if (error) throw error;
       }
     } finally {
+      localCodeUserRef.current = null;
       userRef.current = null;
       applyAccount(null);
       setAnnouncements([]);
       setLinks([]);
       setLastError("");
       setSyncStatus("saved");
-      if (userId) {
+      if (userId && !localUserId) {
         await Promise.all([
           Preferences.remove({ key: accountCacheKey(userId) }),
           Preferences.remove({ key: accountPendingKey(userId) }),
