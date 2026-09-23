@@ -201,7 +201,7 @@ export default function HydraApp() {
       setQuickOpen(false);
       return;
     }
-    if (route === "admin" && !["moderator", "admin", "owner"].includes(store.account.role)) setRoute("home");
+    if ((route === "admin" || route === "research") && store.account.role !== "owner") setRoute("home");
   }, [route, store.account?.id, store.account?.role, store.account?.access.kind, store.account?.access.staffRole]);
 
   useEffect(() => {
@@ -281,7 +281,7 @@ export default function HydraApp() {
     if (next === route) return;
     const access = store.account?.access;
     if (access?.kind === "staff" && !staffRouteAllowed(next, access.staffRole)) return;
-    if (next === "admin" && !["moderator", "admin", "owner"].includes(store.account?.role ?? "user")) return;
+    if ((next === "admin" || next === "research") && store.account?.role !== "owner") return;
     const currentIndex = mainTabs.findIndex((tab) => tab.id === route);
     const nextIndex = mainTabs.findIndex((tab) => tab.id === next);
     setRouteMotion(currentIndex >= 0 && nextIndex >= 0 && nextIndex < currentIndex ? "back" : "forward");
@@ -389,7 +389,7 @@ export default function HydraApp() {
       case "climate": return <ClimateScienceScreen account={account} onBack={goBack} navigate={navigate} />;
       case "research": return <ResearchImpactScreen account={account} onBack={goBack} />;
       case "plus": return <PlusScreen account={account} updateAccount={store.updateAccount} onBack={goBack} />;
-      case "admin": return ["moderator", "admin", "owner"].includes(account.role) ? <AdminScreen account={account} onBack={goBack} /> : isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
+      case "admin": return account.role === "owner" ? <AdminScreen account={account} onBack={goBack} /> : isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
       default: return null;
     }
   }
