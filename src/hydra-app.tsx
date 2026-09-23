@@ -340,7 +340,7 @@ export default function HydraApp() {
   if (!store.ready) return splashLayer;
 
   if (loggingOut) return <main className="auth-logout-status" role="status" aria-live="polite"><span>Saindo…</span><p>Encerrando sua sessão</p></main>;
-  if (!store.account) return <><HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onStaffLogin={store.loginStaff} />{splashLayer}</>;
+  if (!store.account) return <><HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onCreatedLocalAccount={store.activateCreatedCodeAccount} onStaffLogin={store.loginStaff} />{splashLayer}</>;
   if (store.account.bannedAt) return <><BannedScreen reason={store.account.banReason} logout={logoutToLogin} />{splashLayer}</>;
   if (passwordRecovery) return <><PasswordRecoveryScreen save={async (password) => { const result = await store.changeCredentials({ password }); if (result.ok) window.setTimeout(() => setPasswordRecovery(false), 650); return result; }} logout={async () => { setPasswordRecovery(false); await logoutToLogin(); }} />{splashLayer}</>;
 
