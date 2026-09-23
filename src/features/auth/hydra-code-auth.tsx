@@ -277,7 +277,7 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCrea
             <div><small>Código de acesso Nivo</small><strong>{nivoIssued.accessCode}</strong><button aria-label="Copiar código Nivo" type="button" onClick={() => void copy(nivoIssued.accessCode, "access")}>{copied === "access" ? <Check size={17} /> : <Copy size={17} />} {copied === "access" ? "Copiado" : "Copiar"}</button></div>
             <div><small>Código de recuperação Nivo</small><strong>{nivoIssued.recoveryCode}</strong><button aria-label="Copiar recuperação Nivo" type="button" onClick={() => void copy(nivoIssued.recoveryCode, "recovery")}>{copied === "recovery" ? <Check size={17} /> : <Copy size={17} />} {copied === "recovery" ? "Copiado" : "Copiar"}</button></div>
             <p><ShieldCheck size={17} /> O mesmo Nivo ficará vinculado à sua fazenda no Hydra Agro.</p>
-          </>}
+          </div>}
 
           {view === "issued" && issued && <div className="hydra-code-issued" aria-live="polite">
             <div><small>Código de acesso</small><strong>{issued.accessCode}</strong><button aria-label="Copiar código de acesso" type="button" onClick={() => void copy(issued.accessCode, "access")}>{copied === "access" ? <Check size={17} /> : <Copy size={17} />} {copied === "access" ? "Copiado" : "Copiar"}</button></div>
