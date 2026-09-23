@@ -18,6 +18,7 @@ import { StaffProfileScreen } from "./features/staff/staff-profile-screen";
 import { useHydraStore } from "./hooks/use-hydra-store";
 import type { AppRoute, StaffRole } from "./lib/hydra-types";
 import { handleAuthCallbackUrl, supabase } from "./services/supabase";
+import { isHydraCodeAuthAvailable } from "./services/code-auth-service";
 
 const WaterScreen = lazy(() => import("./features/water/water-screen").then((module) => ({ default: module.WaterScreen })));
 const HerdScreen = lazy(() => import("./features/herd/herd-screen").then((module) => ({ default: module.HerdScreen })));
@@ -39,7 +40,7 @@ const AdminScreen = lazy(() => import("./features/admin/admin-screen").then((mod
 const ClimateScienceScreen = lazy(() => import("./features/climate/climate-science-screen").then((module) => ({ default: module.ClimateScienceScreen })));
 const ResearchImpactScreen = lazy(() => import("./features/research/research-impact-screen").then((module) => ({ default: module.ResearchImpactScreen })));
 
-const codeAuthEnabled = import.meta.env.VITE_HYDRA_CODE_AUTH === "true";
+const codeAuthDesired = import.meta.env.VITE_HYDRA_CODE_AUTH !== "false";
 
 type NavTab = { id: AppRoute; label: string; icon: typeof Home };
 
@@ -74,6 +75,7 @@ export default function HydraApp() {
   const [loggingOut, setLoggingOut] = useState(false);
   const [returnToLogin, setReturnToLogin] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(false);
+  const [codeAuthAvailable, setCodeAuthAvailable] = useState<boolean | null>(codeAuthDesired ? null : false);
   async function logoutToLogin() {
     if (loggingOut) return;
     setLoggingOut(true);
@@ -98,6 +100,18 @@ export default function HydraApp() {
   const modalNavigationOpen = useModalNavigation();
 
   useAppOverlay(quickOpen, () => closeQuick());
+
+  useEffect(() => {
+    if (!codeAuthDesired || !store.configured) {
+      setCodeAuthAvailable(false);
+      return;
+    }
+    let active = true;
+    void isHydraCodeAuthAvailable().then((available) => {
+      if (active) setCodeAuthAvailable(available);
+    });
+    return () => { active = false; };
+  }, [store.configured]);
 
   useLayoutEffect(() => {
     const isInitialSplash = !splashInitialized.current;
@@ -343,13 +357,14 @@ export default function HydraApp() {
   if (!store.ready) return splashLayer;
 
   if (loggingOut) return <main className="auth-logout-status" role="status" aria-live="polite"><span>Saindo…</span><p>Encerrando sua sessão</p></main>;
-  if (!store.account) return <>{codeAuthEnabled ? <HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onStaffLogin={store.loginStaff} /> : <AuthFlow initialView={returnToLogin ? "auth" : "landing"} onLogin={store.login} onGoogleLogin={store.loginGoogle} onStaffLogin={store.loginStaff} onSignup={store.createAccount} onResetPassword={store.resetPassword} />}{splashLayer}</>;
+  if (!store.account && codeAuthDesired && codeAuthAvailable === null) return splashLayer ?? <main className="splash-screen"><SplashBrand /></main>;
+  if (!store.account) return <>{codeAuthAvailable ? <HydraCodeAuthFlow initialView={returnToLogin ? "auth" : "landing"} onCodeLogin={store.loginCode} onStaffLogin={store.loginStaff} /> : <AuthFlow initialView={returnToLogin ? "auth" : "landing"} onLogin={store.login} onGoogleLogin={store.loginGoogle} onStaffLogin={store.loginStaff} onSignup={store.createAccount} onResetPassword={store.resetPassword} />}{splashLayer}</>;
   if (store.account.bannedAt) return <><BannedScreen reason={store.account.banReason} logout={logoutToLogin} />{splashLayer}</>;
   if (passwordRecovery) return <><PasswordRecoveryScreen save={async (password) => { const result = await store.changeCredentials({ password }); if (result.ok) window.setTimeout(() => setPasswordRecovery(false), 650); return result; }} logout={async () => { setPasswordRecovery(false); await logoutToLogin(); }} />{splashLayer}</>;
 
   const account = store.account;
   let pendingCodeOnboarding = false;
-  if (codeAuthEnabled && !onboardingDone && account.access.kind !== "staff") {
+  if (codeAuthAvailable && !onboardingDone && account.access.kind !== "staff") {
     try {
       pendingCodeOnboarding = window.sessionStorage.getItem("hydra-code-onboarding") === account.id;
     } catch { /* Ambiente sem storage: preservar acesso à conta. */ }
