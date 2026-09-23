@@ -1,0 +1,184 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+import { ArrowLeft, ArrowRight, Check, Copy, KeyRound, Leaf, ShieldCheck, UsersRound, X } from "lucide-react";
+import { HydraMark } from "../../components/brand";
+import type { AuthResult } from "../../lib/hydra-types";
+import {
+  codeHasLength,
+  createHydraCodeAccount,
+  formatHydraCode,
+  recoverHydraCodeAccount,
+  type IssuedHydraCodes,
+} from "../../services/code-auth-service";
+import "./hydra-code-auth.css";
+
+type View = "landing" | "access" | "create" | "recover" | "issued" | "staff";
+type Props = {
+  initialView?: "landing" | "auth";
+  onCodeLogin: (code: string) => Promise<AuthResult>;
+  onStaffLogin: (code: string) => Promise<AuthResult>;
+};
+
+function formatStaff(value: string) {
+  let compact = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14);
+  if (compact && !compact.startsWith("HA")) compact = ("HA" + compact).slice(0, 14);
+  const body = compact.startsWith("HA") ? compact.slice(2) : compact;
+  return compact ? "HA-" + (body.match(/.{1,4}/g) || []).join("-") : "";
+}
+
+export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onStaffLogin }: Props) {
+  const [view, setView] = useState<View>(initialView === "auth" ? "access" : "landing");
+  const [code, setCode] = useState("");
+  const [recovery, setRecovery] = useState("");
+  const [staff, setStaff] = useState("");
+  const [issued, setIssued] = useState<IssuedHydraCodes | null>(null);
+  const [issuedFrom, setIssuedFrom] = useState<"create" | "recover">("create");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState<"access" | "recovery" | null>(null);
+
+  function switchView(next: View) {
+    if (busy) return;
+    setError("");
+    setView(next);
+  }
+
+  async function issueCode(action: "create" | "recover") {
+    if (busy) return;
+    if (action === "recover" && !codeHasLength(recovery, 24)) {
+      setError("Digite seu código de recuperação completo.");
+      return;
+    }
+    setError("");
+    setBusy(true);
+    try {
+      const result = action === "create" ?
+        await createHydraCodeAccount() : await recoverHydraCodeAccount(recovery);
+      setIssued(result);
+      setIssuedFrom(action);
+      setView("issued");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Não foi possível criar o código agora.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function signIn(value: string, isStaff: boolean, justCreated = false) {
+    if (busy) return;
+    if (isStaff ? !/^HA[A-Z2-9]{12}$/.test(value.replace(/-/g, "")) : !codeHasLength(value, 16)) {
+      setError("Digite seu código completo.");
+      return;
+    }
+    setError("");
+    setBusy(true);
+    try {
+      if (justCreated && issued?.userId) {
+        window.sessionStorage.setItem("hydra-code-onboarding", issued.userId);
+      }
+      const result = isStaff ? await onStaffLogin(value) : await onCodeLogin(value);
+      if (!result.ok) {
+        if (justCreated) window.sessionStorage.removeItem("hydra-code-onboarding");
+        setError(result.message);
+        setBusy(false);
+      }
+      // Se houve sucesso, o HydraApp substitui esta tela assim que a conta é carregada.
+    } catch (caught) {
+      if (justCreated) window.sessionStorage.removeItem("hydra-code-onboarding");
+      setError(caught instanceof Error ? caught.message : "Não foi possível entrar agora.");
+      setBusy(false);
+    }
+  }
+
+  async function copy(value: string, kind: "access" | "recovery") {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(kind);
+      window.setTimeout(() => setCopied(null), 1800);
+    } catch {
+      setError("Não foi possível copiar. Anote o código antes de continuar.");
+    }
+  }
+
+  if (view === "landing") return (
+    <main className="hydra-code-entry hydra-code-welcome">
+      <header className="hydra-code-topbar"><div className="hydra-code-wordmark"><HydraMark /><span>hydra <b>agro</b></span></div></header>
+      <div className="hydra-code-intro"><div className="hydra-code-welcome-mark"><HydraMark /></div>
+        <span className="hydra-code-eyebrow">SUA PROPRIEDADE EM UM SÓ LUGAR</span>
+        <h1>Sua rotina no campo.<br /><em>Mais simples.</em></h1>
+        <p>Gerencie animais, água, tarefas e setores da propriedade. Comece com um código privado, sem senha ou e-mail.</p>
+      </div>
+      <div className="hydra-code-welcome-actions">
+        <button className="hydra-code-primary" type="button" onClick={() => switchView("access")}>Entrar <ArrowRight size={19} /></button>
+        <button className="hydra-code-secondary" type="button" onClick={() => switchView("create")}>Criar conta</button>
+        <button className="hydra-code-muted-button" type="button" onClick={() => switchView("staff")}><UsersRound size={17} /> Acesso de funcionário</button>
+      </div>
+    </main>
+  );
+
+  return (
+    <main className="hydra-code-entry hydra-code-flow">
+      <header className="hydra-code-topbar"><div className="hydra-code-wordmark"><HydraMark /><span>hydra <b>agro</b></span></div>
+        <button className="hydra-code-close" aria-label="Fechar" type="button" disabled={busy || view === "issued"} onClick={() => switchView("landing")}><X size={19} /></button>
+      </header>
+      {(view === "access" || view === "create") && <nav className="hydra-code-tabs" aria-label="Tipo de acesso">
+        <button className={view === "access" ? "active" : ""} aria-current={view === "access" ? "page" : undefined} onClick={() => switchView("access")}>Entrar</button>
+        <button className={view === "create" ? "active" : ""} aria-current={view === "create" ? "page" : undefined} onClick={() => switchView("create")}>Criar conta</button>
+      </nav>}
+      <form className="hydra-code-panel" onSubmit={(event: FormEvent) => {
+        event.preventDefault();
+        if (view === "create" || view === "recover") void issueCode(view);
+        else if (view === "access") void signIn(code, false);
+        else if (view === "staff") void signIn(staff, true);
+      }}>
+        <div className="hydra-code-question" key={view}>
+          <span className="hydra-code-eyebrow">
+            {view === "access" ? "SEU ACESSO" : view === "create" ? "NOVO ACESSO" : view === "recover" ? "RECUPERAÇÃO" : view === "issued" ? "CÓDIGOS CRIADOS" : "ACESSO À PROPRIEDADE"}
+          </span>
+          <h1>{view === "access" ? "Entre no Hydra Agro" : view === "create" ? "Crie sua conta" : view === "recover" ? "Recupere seu acesso" : view === "issued" ? "Guarde seus códigos" : "Código de funcionário"}</h1>
+          <p>{view === "access" ? "Digite o código privado da sua conta." : view === "create" ? "Sem e-mail e sem senha. Um código privado será gerado para sua conta." : view === "recover" ? "Use o código de recuperação que você recebeu ao criar sua conta." : view === "issued" ? "Seu código de acesso permite entrar. O de recuperação cria novos códigos se você perder o primeiro." : "Digite o código fornecido pelo dono da propriedade."}</p>
+
+          {view === "access" && <>
+            <label className="hydra-code-label" htmlFor="hydra-access-code">Código de acesso</label>
+            <input autoFocus id="hydra-access-code" className="hydra-code-input" inputMode="text" type="text" value={code} maxLength={19} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="XXXX-XXXX-XXXX-XXXX" onChange={(event) => { setCode(formatHydraCode(event.target.value, 16)); setError(""); }} />
+            <button className="hydra-code-muted-button inline" type="button" onClick={() => switchView("recover")}>Perdi meu código</button>
+          </>}
+
+          {view === "recover" && <>
+            <label className="hydra-code-label" htmlFor="hydra-recovery-code">Código de recuperação</label>
+            <input autoFocus id="hydra-recovery-code" className="hydra-code-input" value={recovery} maxLength={29} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" onChange={(event) => { setRecovery(formatHydraCode(event.target.value, 24)); setError(""); }} />
+            <p className="hydra-code-hint">Após a recuperação, seu código de acesso anterior deixa de funcionar.</p>
+          </>}
+
+          {view === "create" && <div className="hydra-code-explainer">
+            <span>1</span><p>Geramos seu código de acesso privado.</p>
+            <span>2</span><p>Você guarda o código e a chave de recuperação em local seguro.</p>
+            <span>3</span><p>Depois, entra apenas com seu código de acesso.</p>
+          </div>}
+
+          {view === "staff" && <>
+            <label className="hydra-code-label" htmlFor="hydra-staff-code">Código de funcionário</label>
+            <input id="hydra-staff-code" autoFocus className="hydra-code-input" value={staff} maxLength={17} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="HA-XXXX-XXXX-XXXX" onChange={(event) => { setStaff(formatStaff(event.target.value)); setError(""); }} />
+            <p className="hydra-code-hint">O dono da propriedade fornece seu código.</p>
+          </>}
+
+          {view === "issued" && issued && <div className="hydra-code-issued" aria-live="polite">
+            <div><small>Código de acesso</small><strong>{issued.accessCode}</strong><button aria-label="Copiar código de acesso" type="button" onClick={() => void copy(issued.accessCode, "access")}>{copied === "access" ? <Check size={17} /> : <Copy size={17} />} {copied === "access" ? "Copiado" : "Copiar"}</button></div>
+            <div><small>Código de recuperação</small><strong>{issued.recoveryCode}</strong><button aria-label="Copiar código de recuperação" type="button" onClick={() => void copy(issued.recoveryCode, "recovery")}>{copied === "recovery" ? <Check size={17} /> : <Copy size={17} />} {copied === "recovery" ? "Copiado" : "Copiar"}</button></div>
+            <p><ShieldCheck size={17} /> Estes códigos não serão exibidos novamente. Guarde os dois antes de continuar.</p>
+          </div>}
+          {error && <p className="hydra-code-error" role="alert">{error}</p>}
+        </div>
+        <div className="hydra-code-actions">
+          <button className="hydra-code-back" type="button" aria-label="Voltar" disabled={busy || view === "issued"} onClick={() => switchView(view === "recover" || view === "staff" ? "access" : "landing")}><ArrowLeft size={19} /></button>
+          {view === "issued" ? <button className="hydra-code-primary" disabled={busy || !issued} type="button" onClick={() => { if (issued) void signIn(issued.accessCode, false, issuedFrom === "create"); }}>{busy ? "Entrando…" : "Já salvei, continuar"} <ArrowRight size={19} /></button>
+            : <button className="hydra-code-primary" disabled={busy || (view === "access" && !codeHasLength(code, 16)) || (view === "recover" && !codeHasLength(recovery, 24)) || (view === "staff" && staff.replace(/-/g, "").length !== 14)} type="submit">
+              {busy ? "Aguarde…" : view === "create" ? "Gerar meu código" : view === "recover" ? "Recuperar acesso" : "Entrar"} <ArrowRight size={19} />
+            </button>}
+        </div>
+      </form>
+      <footer className="hydra-code-footer"><Leaf size={14} /> Hydra Agro · sua propriedade, seus dados.</footer>
+    </main>
+  );
+}
