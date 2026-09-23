@@ -77,10 +77,17 @@ export function AdminScreen({ account, onBack }: { account: HydraAccount; onBack
   const [notification, setNotification] = useState({ title: "", body: "" });
   const [announcement, setAnnouncement] = useState<Announcement | null>(null);
   const [link, setLink] = useState<AppLink | null>(null);
+  const localAdmin = account.id === "hydra-admin-owner-v1" || (account.id === "nivo-nivo-owner-account-v1" && account.role === "owner");
 
   async function refresh() {
     setLoading(true);
     setError("");
+    if (localAdmin) {
+      setData(emptyData);
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
     try {
       const [dashboard, moderation] = await Promise.all([loadAdminData(), loadModerationPosts()]);
       setData(dashboard);
@@ -196,12 +203,12 @@ export function AdminScreen({ account, onBack }: { account: HydraAccount; onBack
   }
 
   const metricCards = [
-    ["Usuários", 179, <UsersRound size={21} />],
-    ["Propriedades", 126, <ShieldCheck size={21} />],
-    ["Animais", 575, <BarChart3 size={21} />],
-    ["Leituras de água", 248, <BarChart3 size={21} />],
-    ["Publicações", 94, <MessageSquareWarning size={21} />],
-    ["Hydra Agro+", 37, <CheckCircle2 size={21} />],
+    ["Usuários", data.metrics.users, <UsersRound size={21} />],
+    ["Propriedades", data.metrics.properties, <ShieldCheck size={21} />],
+    ["Animais", data.metrics.animals, <BarChart3 size={21} />],
+    ["Leituras de água", data.metrics.waterRecords, <BarChart3 size={21} />],
+    ["Publicações", data.metrics.posts, <MessageSquareWarning size={21} />],
+    ["Hydra Agro+", data.metrics.activeSubscriptions, <CheckCircle2 size={21} />],
   ] as const;
 
   return (
@@ -214,7 +221,7 @@ export function AdminScreen({ account, onBack }: { account: HydraAccount; onBack
         action={<button className="icon-button accent" onClick={() => void refresh()} aria-label="Atualizar painel" disabled={loading}><RefreshCw size={19} /></button>}
       />
 
-      <div className="admin-owner-strip"><ShieldCheck size={18} /><div><strong>{account.role === "owner" ? "Proprietário do aplicativo" : "Equipe administrativa"}</strong><small>Permissão verificada no servidor para {account.email}</small></div></div>
+      <div className="admin-owner-strip"><ShieldCheck size={18} /><div><strong>{account.role === "owner" ? "Proprietário do aplicativo" : "Equipe administrativa"}</strong><small>{localAdmin ? "Acesso administrativo por código · dados remotos serão conectados quando o Supabase do Hydra estiver ativo" : `Permissão verificada no servidor para ${account.email}`}</small></div></div>
 
       <div className="admin-tabs" role="tablist" aria-label="Seções administrativas">
         {([
