@@ -38,20 +38,20 @@ async function request(body:Record<string,unknown>, token?:string){
   return data??{};
 }
 
-async function ensureLocalLinkedAccount(userId:string, role:"owner"|"user", integrationToken?:string, activate=true){
+async function ensureLocalLinkedAccount(userId:string, integrationToken?:string, activate=true){
   const id="nivo-"+userId;
   let account=await loadLocalHydraCodeAccount(id);
   if(!account){
     account=createEmptyAccount({
       id,
       email:"",
-      name:role==="owner"?"Administrador":"Produtor"
+      name:"Produtor"
     });
-    account={...account,role:role==="owner"?"owner":"user"};
+    account={...account,role:"user"};
     await saveLocalHydraCodeAccount(account);
   }
-  if(role==="owner"&&account.role!=="owner"){
-    account={...account,role:"owner"};
+  if(account.role!=="user"){
+    account={...account,role:"user"};
     await saveLocalHydraCodeAccount(account);
   }
   if(integrationToken){
@@ -63,10 +63,9 @@ async function ensureLocalLinkedAccount(userId:string, role:"owner"|"user", inte
 export async function loginHydraWithNivo(code:string):Promise<HydraNivoAuthResult>{
   const data=await request({action:"nivo-login",code});
   const userId=typeof data.userId==="string"?data.userId:"";
-  const role=data.role==="owner"?"owner":"user";
   const integrationToken=typeof data.integrationToken==="string"?data.integrationToken:"";
   if(!userId||!integrationToken)throw new Error("O Nivo não retornou um vínculo válido.");
-  const account=await ensureLocalLinkedAccount(userId,role,integrationToken);
+  const account=await ensureLocalLinkedAccount(userId,integrationToken);
   await syncHydraFarmToNivo(account).catch(()=>undefined);
   return {account};
 }
@@ -78,29 +77,9 @@ export async function createHydraWithNivo():Promise<HydraNivoAuthResult>{
   const recoveryCode=typeof data.recoveryCode==="string"?data.recoveryCode:"";
   const integrationToken=typeof data.integrationToken==="string"?data.integrationToken:"";
   if(!userId||!accessCode||!recoveryCode||!integrationToken)throw new Error("Não foi possível criar a conta Nivo.");
-  const account=await ensureLocalLinkedAccount(userId,"user",integrationToken,false);
+  const account=await ensureLocalLinkedAccount(userId,integrationToken,false);
   await syncHydraFarmToNivo(account).catch(()=>undefined);
   return {account,issued:{accessCode,recoveryCode}};
-}
-
-export async function loginHydraAdminCode(code:string):Promise<HydraAccount>{
-  const data=await request({action:"admin-login",code});
-  if(data.role!=="owner"||typeof data.userId!=="string")throw new Error("Código administrativo inválido.");
-  const id=String(data.userId);
-  let account:HydraAccount;
-  try{
-    account=await activateLocalHydraCodeAccount(id);
-  }catch{
-    account=createEmptyAccount({id,email:"",name:"Administrador"});
-    account={...account,role:"owner"};
-    await saveLocalHydraCodeAccount(account);
-    account=await activateLocalHydraCodeAccount(id);
-  }
-  if(account.role!=="owner"){
-    account={...account,role:"owner"};
-    await saveLocalHydraCodeAccount(account);
-  }
-  return account;
 }
 
 export async function syncHydraFarmToNivo(account:HydraAccount){
