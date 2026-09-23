@@ -7,6 +7,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
   readonly VITE_NIVO_AGRO_API?: string;
   readonly VITE_NIVO_WHATSAPP_NUMBER?: string;
+  readonly VITE_HYDRA_CODE_AUTH?: string;
 }
 
 interface ImportMeta {
