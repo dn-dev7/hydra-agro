@@ -313,10 +313,10 @@ export function useHydraStore() {
 
   const loginCode = useCallback(async (code: string): Promise<AuthResult> => {
     try {
-      setReady(false);
       const data = await signInWithHydraCode(code);
       if (!data.user) throw new Error("Sessão inválida.");
       await loadUser(data.user);
+      if (accountRef.current?.id !== data.user.id) throw new Error("Não foi possível carregar sua conta. Tente novamente.");
       return { ok: true, message: "Acesso liberado." };
     } catch (error) {
       setReady(true);
