@@ -17,6 +17,7 @@ type View = "landing" | "access" | "create" | "recover" | "issued" | "staff";
 type Props = {
   initialView?: "landing" | "auth";
   onCodeLogin: (code: string) => Promise<AuthResult>;
+  onCreatedLocalAccount: (userId: string) => Promise<AuthResult>;
   onStaffLogin: (code: string) => Promise<AuthResult>;
 };
 
@@ -27,7 +28,7 @@ function formatStaff(value: string) {
   return compact ? "HA-" + (body.match(/.{1,4}/g) || []).join("-") : "";
 }
 
-export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onStaffLogin }: Props) {
+export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onCreatedLocalAccount, onStaffLogin }: Props) {
   const [view, setView] = useState<View>(initialView === "auth" ? "access" : "landing");
   const [code, setCode] = useState("");
   const [recovery, setRecovery] = useState("");
@@ -77,7 +78,9 @@ export function HydraCodeAuthFlow({ initialView = "landing", onCodeLogin, onStaf
       if (justCreated && issued?.userId) {
         window.sessionStorage.setItem("hydra-code-onboarding", issued.userId);
       }
-      const result = isStaff ? await onStaffLogin(value) : await onCodeLogin(value);
+      const result = !isStaff && justCreated && issued?.localOnly
+        ? await onCreatedLocalAccount(issued.userId)
+        : isStaff ? await onStaffLogin(value) : await onCodeLogin(value);
       if (!result.ok) {
         if (justCreated) window.sessionStorage.removeItem("hydra-code-onboarding");
         setError(result.message);
