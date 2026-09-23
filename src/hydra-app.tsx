@@ -40,7 +40,7 @@ const AdminScreen = lazy(() => import("./features/admin/admin-screen").then((mod
 const ClimateScienceScreen = lazy(() => import("./features/climate/climate-science-screen").then((module) => ({ default: module.ClimateScienceScreen })));
 const ResearchImpactScreen = lazy(() => import("./features/research/research-impact-screen").then((module) => ({ default: module.ResearchImpactScreen })));
 
-const codeAuthDesired = import.meta.env.VITE_HYDRA_CODE_AUTH !== "false";
+const codeAuthDesired = true;
 
 type NavTab = { id: AppRoute; label: string; icon: typeof Home };
 
