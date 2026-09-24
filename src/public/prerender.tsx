@@ -22,11 +22,11 @@ function DownloadCard() {
 
       <div className="hydra-download-availability" aria-live="polite">
         <span className="hydra-download-dot" aria-hidden="true" />
-        <span id="hydra-download-status">Consultando a versão mais recente...</span>
+        <span id="hydra-download-status">Versão 1.3.0 restaurada para download</span>
       </div>
 
       <div className="hydra-download-actions">
-        <a id="hydra-download-apk" className="hydra-download-primary" href="#" hidden>
+        <a id="hydra-download-apk" className="hydra-download-primary" href="https://github.com/dn-dev7/hydra-agro/releases/download/v1.3.0/HydraAgro-v1.3.0.apk">
           <span className="hydra-download-button-icon" aria-hidden="true">↓</span>
           <span><strong>Baixar APK</strong><small>Hydra Agro para Android</small></span>
         </a>
@@ -36,13 +36,13 @@ function DownloadCard() {
       </div>
 
       <div className="hydra-download-release-meta" aria-label="Informações da versão">
-        <div><span>Versão</span><strong id="hydra-download-version">—</strong></div>
-        <div><span>Tamanho</span><strong id="hydra-download-size">—</strong></div>
-        <div><span>Atualizado</span><strong id="hydra-download-date">—</strong></div>
+        <div><span>Versão</span><strong id="hydra-download-version">v1.3.0</strong></div>
+        <div><span>Tamanho</span><strong id="hydra-download-size">8,7 MB</strong></div>
+        <div><span>Atualizado</span><strong id="hydra-download-date">15 set 2026</strong></div>
       </div>
       <div className="hydra-download-trust" aria-label="Informações do download">
         <span>APK oficial</span>
-        <span>Versão mais recente</span>
+        <span>Versão v1.3.0 (15/09/2026)</span>
         <span>SHA-256 disponível</span>
       </div>
       <p id="hydra-download-meta" className="hydra-download-meta" />
@@ -81,7 +81,7 @@ function DownloadContent({ page }: { page: typeof pages[number] }) {
         <p>Três passos no próprio celular. Depois, o Hydra Agro fica pronto para abrir como qualquer outro aplicativo.</p>
       </div>
       <div className="hydra-download-steps">
-        <article><span>01</span><h3>Baixe</h3><p>Toque em Baixar APK para receber a versão oficial mais recente.</p></article>
+        <article><span>01</span><h3>Baixe</h3><p>Toque em Baixar APK para receber a versão v1.3.0 do Hydra Agro.</p></article>
         <article><span>02</span><h3>Abra</h3><p>Abra o arquivo baixado. Se o Android pedir permissão, autorize somente a origem usada neste download.</p></article>
         <article><span>03</span><h3>Instale</h3><p>Conclua a instalação, abra o Hydra Agro e acesse sua conta normalmente.</p></article>
       </div>
@@ -93,7 +93,7 @@ function DownloadContent({ page }: { page: typeof pages[number] }) {
         <h2>{section.heading}</h2>
         <p>{section.text}</p>
         {section.heading === "Segurança do download" ? <div className="hydra-download-security-links">
-          <a id="hydra-download-checksum" href="#" hidden>Conferir SHA-256</a>
+          <a id="hydra-download-checksum" href="https://github.com/dn-dev7/hydra-agro/releases/download/v1.3.0/HydraAgro-v1.3.0.apk.sha256">Conferir SHA-256</a>
         </div> : null}
       </section>)}
     </div>
