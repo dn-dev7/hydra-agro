@@ -22,8 +22,9 @@ describe("download oficial do Android", () => {
 
   it("mantém o APK restaurado da versão 1.3.0 no repositório oficial", () => {
     expect(releaseScript).toContain('const releaseTag = "v1.3.0"');
-    expect(releaseScript).toContain("/^HydraAgro-v.+\\.apk$/i");
-    expect(releaseScript).toContain('const assetName = "HydraAgro-v1.3.0.apk"');\n    expect(releaseScript).toContain("/releases/download/${releaseTag}/${assetName}");
+    expect(releaseScript).toContain('const repository = "dn-dev7/hydra-agro"');
+    expect(releaseScript).toContain('const assetName = "HydraAgro-v1.3.0.apk"');
+    expect(releaseScript).toContain("/releases/download/${releaseTag}/${assetName}");
   });
 
   it("publica a rota e oferece Android ou Web somente depois da autenticação", () => {
