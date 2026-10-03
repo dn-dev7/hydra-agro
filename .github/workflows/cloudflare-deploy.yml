@@ -45,7 +45,6 @@ jobs:
         env:
           SECRET_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SECRET_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-          SECRET_NIVO_API: ${{ secrets.VITE_NIVO_AGRO_API }}
         run: |
           cp .env.example .env.production
           if [ -n "$SECRET_SUPABASE_URL" ]; then
@@ -53,9 +52,6 @@ jobs:
           fi
           if [ -n "$SECRET_SUPABASE_KEY" ]; then
             printf 'VITE_SUPABASE_PUBLISHABLE_KEY=%s\n' "$SECRET_SUPABASE_KEY" >> .env.production
-          fi
-          if [ -n "$SECRET_NIVO_API" ]; then
-            printf 'VITE_NIVO_AGRO_API=%s\n' "$SECRET_NIVO_API" >> .env.production
           fi
           npm run env:check
 
