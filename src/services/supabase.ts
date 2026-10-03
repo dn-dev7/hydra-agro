@@ -2,8 +2,8 @@ import { Preferences } from "@capacitor/preferences";
 import { Capacitor } from "@capacitor/core";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const FALLBACK_SUPABASE_URL = "https://gfwypccosftpchpbdiir.supabase.co";
-const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_uL6O0N4LwLykHFprsFjm6A_Z8UHxj2I";
+const FALLBACK_SUPABASE_URL = "https://uzluhqqgtinmxougdpmr.supabase.co";
+const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rqoMNFyUyheZWjpI8qJqmg_Ff-yI7su";
 const isTestMode = import.meta.env.MODE === "test";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || (isTestMode ? "" : FALLBACK_SUPABASE_URL);
