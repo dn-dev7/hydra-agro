@@ -39,7 +39,7 @@ function openSetting(buttonName: string | RegExp) {
 
 describe("ações de preferências e segurança", () => {
   it.each([
-    [/^Código de acesso/, "Seu código de acesso"],
+    [/^Segurança/, "E-mail e senha"],
     [/^Notificações/, "Notificações do aplicativo"],
     [/^Apoie o Hydra Agro/, "Apoie o Hydra Agro"],
     [/^Termos de uso/, "Termos de uso"],
@@ -63,11 +63,14 @@ describe("ações de preferências e segurança", () => {
     expect(updateAccountMock.mock.calls[0][1]).toEqual({ requireRemote: true });
   });
 
-  it("remove o acesso por e-mail e senha das configurações quando o login por código está ativo", () => {
-    setup();
-    openSettings();
-    expect(screen.queryByRole("button", { name: /^Segurança/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^Código de acesso/ })).toBeInTheDocument();
+  it("altera a senha usando a autenticação existente", async () => {
+    const { changeCredentials } = setup();
+    openSetting(/^Segurança/);
+    fireEvent.change(screen.getByLabelText(/^Nova senha/), { target: { value: "senha-segura-123" } });
+    fireEvent.change(screen.getByLabelText("Confirmar nova senha"), { target: { value: "senha-segura-123" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar alterações" }));
+
+    await waitFor(() => expect(changeCredentials).toHaveBeenCalledWith({ password: "senha-segura-123" }));
   });
 
   it("mostra conteúdo completo nos termos", () => {
@@ -79,8 +82,7 @@ describe("ações de preferências e segurança", () => {
 
   it("abre a confirmação e conclui a saída da conta", async () => {
     const { logout } = setup();
-    expect(screen.queryByRole("button", { name: "Sair desta conta" })).not.toBeInTheDocument();
-    openSetting(/^Sair da conta/);
+    fireEvent.click(screen.getByRole("button", { name: "Sair desta conta" }));
     expect(screen.getByRole("dialog", { name: "Finalizar sessão" })).toBeInTheDocument();
     expect(screen.getByText("Deseja sair desta conta?")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Sair" }));
@@ -89,8 +91,7 @@ describe("ações de preferências e segurança", () => {
 
   it("cancela a saída sem encerrar a sessão", () => {
     const { logout } = setup();
-    expect(screen.queryByRole("button", { name: "Sair desta conta" })).not.toBeInTheDocument();
-    openSetting(/^Sair da conta/);
+    fireEvent.click(screen.getByRole("button", { name: "Sair desta conta" }));
     fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
     expect(logout).not.toHaveBeenCalled();
   });

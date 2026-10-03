@@ -3,5 +3,4 @@ import "../../assistant-v2.css";
 import "../../feature-surface-fix.css";
 import "../../assistant-rounded.css";
 import "../../assistant-conversation-first.css";
-import "../../assistant-nivo-icons.css";
 export { HydraAssistantScreen } from "./hydra-assistant-screen";

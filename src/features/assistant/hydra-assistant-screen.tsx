@@ -8,7 +8,6 @@ import {
   Database,
   FileDown,
   LoaderCircle,
-  MessageCircle,
   Nfc,
   RadioTower,
   Send,
@@ -28,12 +27,6 @@ import { downloadPropertyReportPdf } from "../../services/property-report";
 import { supabase } from "../../services/supabase";
 import { animalComfort, waterSituation } from "../../services/climate-science";
 import { loadWeather, type WeatherSnapshot } from "../../services/weather-service";
-
-const NIVO_AGRO_API = import.meta.env.VITE_NIVO_AGRO_API?.trim() || "https://nivostudy.danqxy7.workers.dev/api/hydra/chat";
-const NIVO_AGRO_BASE = NIVO_AGRO_API.replace(/\/api\/hydra\/chat\/?$/, "");
-const NIVO_WHATSAPP_LINK_API = `${NIVO_AGRO_BASE}/api/hydra/whatsapp/link`;
-const NIVO_WHATSAPP_CONTEXT_API = `${NIVO_AGRO_BASE}/api/hydra/whatsapp/context`;
-const NIVO_WHATSAPP_NUMBER = import.meta.env.VITE_NIVO_WHATSAPP_NUMBER?.replace(/\D/g, "") || "";
 
 type Props = { account: HydraAccount; onBack: () => void };
 type AssistantMessage = { id: string; role: "user" | "assistant"; text: string; mode?: "ai" | "local" | "action" };
@@ -232,10 +225,6 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
   const storageKey = `hydra.assistant.chat.${account.id}`;
   const [question, setQuestion] = useState("");
   const [busy, setBusy] = useState(false);
-  const [whatsappBusy, setWhatsappBusy] = useState(false);
-  const [whatsappCode, setWhatsappCode] = useState("");
-  const [whatsappExpiresAt, setWhatsappExpiresAt] = useState<number | null>(null);
-  const [whatsappError, setWhatsappError] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<AssistantMessage[]>(() => {
     try {
@@ -243,7 +232,7 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
       const parsed = saved ? JSON.parse(saved) as AssistantMessage[] : [];
       if (Array.isArray(parsed) && parsed.length) return parsed.slice(-24);
     } catch { /* armazenamento indisponível */ }
-    return [{ id: "welcome", role: "assistant", text: `Eu sou o Nivo Agro. Posso consultar os registros autorizados de ${account.property.name || "sua propriedade"} e transformar esses dados em respostas simples.`, mode: "local" }];
+    return [{ id: "welcome", role: "assistant", text: `Posso consultar os registros de ${account.property.name || "sua propriedade"} e ajudar a encontrar o que precisa de atenção.`, mode: "local" }];
   });
 
   useEffect(() => {
@@ -253,73 +242,6 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
   useEffect(() => {
     try { window.localStorage.setItem(storageKey, JSON.stringify(messages.slice(-24))); } catch { /* armazenamento indisponível */ }
   }, [messages, storageKey]);
-
-  useEffect(() => {
-    let active = true;
-    void (async () => {
-      try {
-        const session = await supabase?.auth.getSession();
-        const token = session?.data.session?.access_token;
-        if (!token || navigator.onLine === false) return;
-        await fetch(NIVO_WHATSAPP_CONTEXT_API, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ context }),
-        });
-      } catch {
-        if (active) return;
-      }
-    })();
-    return () => { active = false; };
-  }, [context]);
-
-  async function connectWhatsApp() {
-    if (whatsappBusy) return;
-    setWhatsappBusy(true);
-    setWhatsappError("");
-    try {
-      const session = await supabase?.auth.getSession();
-      const token = session?.data.session?.access_token;
-      if (!token) throw new Error("Entre novamente na sua conta do Hydra.");
-      await fetch(NIVO_WHATSAPP_CONTEXT_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ context }),
-      }).catch(() => undefined);
-      const response = await fetch(NIVO_WHATSAPP_LINK_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json().catch(() => ({})) as { code?: string; expiresAt?: number; error?: string };
-      if (!response.ok || !data.code) throw new Error(data.error || "Não foi possível gerar o código.");
-      setWhatsappCode(data.code);
-      setWhatsappExpiresAt(typeof data.expiresAt === "number" ? data.expiresAt : null);
-      showAppToast("Código do WhatsApp gerado");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Não foi possível conectar o WhatsApp.";
-      setWhatsappError(message);
-      showAppToast(message, "error");
-    } finally {
-      setWhatsappBusy(false);
-    }
-  }
-
-  async function copyWhatsAppCode() {
-    if (!whatsappCode) return;
-    const value = `vincular ${whatsappCode}`;
-    try {
-      await navigator.clipboard.writeText(value);
-      showAppToast("Código copiado");
-    } catch {
-      showAppToast(value);
-    }
-  }
-
-  function openWhatsAppLink() {
-    if (!whatsappCode || !NIVO_WHATSAPP_NUMBER) return;
-    const text = encodeURIComponent(`vincular ${whatsappCode}`);
-    window.open(`https://wa.me/${NIVO_WHATSAPP_NUMBER}?text=${text}`, "_blank", "noopener,noreferrer");
-  }
 
   function clearConversation() {
     const welcome: AssistantMessage = { id: `welcome-${Date.now()}`, role: "assistant", text: "Conversa limpa. Pode mandar uma nova pergunta.", mode: "action" };
@@ -363,15 +285,12 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
     try {
       const session = await supabase?.auth.getSession();
       const token = session?.data.session?.access_token;
-      if (token && navigator.onLine !== false) {
-        const conversationHistory = messages
-          .filter((message) => message.id !== "welcome")
-          .slice(-8)
-          .map((message) => ({ role: message.role, content: message.text }));
-        const response = await fetch(NIVO_AGRO_API, {
+      const canUseHostedApi = window.location.protocol === "https:" || window.location.hostname === "localhost";
+      if (token && canUseHostedApi) {
+        const response = await fetch("/api/hydra-assistant", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ question: text, context, messages: conversationHistory }),
+          body: JSON.stringify({ question: text, context }),
         });
         if (response.ok) {
           const data = await response.json() as { answer?: string };
@@ -398,7 +317,7 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
 
   return (
     <div className="screen page-enter assistant-screen assistant-v2">
-      <ScreenHeader eyebrow="NIVO AGRO" title="Nivo" subtitle="A inteligência do Hydra Agro para entender os dados da propriedade." onBack={onBack} />
+      <ScreenHeader eyebrow="ASSISTENTE" title="Hydra" subtitle="Consulte os registros da propriedade e encontre pendências." onBack={onBack} />
 
       <section className="assistant-hero assistant-v2-hero">
         <div className="assistant-v2-hero-top">
@@ -452,28 +371,12 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
 
       <section className="assistant-conversation assistant-v2-conversation">
         <header className="assistant-conversation-head">
-          <div><span className="assistant-online-dot" /><span><strong>Nivo Agro</strong><small>Usa somente os registros autorizados desta conta</small></span></div>
+          <div><span className="assistant-online-dot" /><span><strong>Conversa</strong><small>Usa os registros disponíveis na conta</small></span></div>
           <div className="assistant-chat-tools">
-            <button onClick={() => void connectWhatsApp()} aria-label="Conectar WhatsApp" disabled={whatsappBusy}><MessageCircle size={15} /></button>
             <button onClick={() => void copyLastAnswer()} aria-label="Copiar última resposta"><Copy size={15} /></button>
             <button onClick={clearConversation} aria-label="Limpar conversa"><Trash2 size={15} /></button>
           </div>
         </header>
-
-        {(whatsappCode || whatsappError) && <div className="assistant-whatsapp-link" role="status">
-          <span className="assistant-whatsapp-icon"><MessageCircle size={18} /></span>
-          <div>
-            <strong>{whatsappCode ? "Conectar este WhatsApp" : "Não foi possível conectar"}</strong>
-            {whatsappCode ? <>
-              <p>Envie <b>vincular {whatsappCode}</b> para o número oficial do Nivo Agro.</p>
-              <small>{whatsappExpiresAt ? `Código válido até ${new Date(whatsappExpiresAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}.` : "O código expira em poucos minutos."}</small>
-              <div className="assistant-whatsapp-actions">
-                <button type="button" onClick={() => void copyWhatsAppCode()}><Copy size={14} /> copiar código</button>
-                {NIVO_WHATSAPP_NUMBER && <button type="button" onClick={openWhatsAppLink}><MessageCircle size={14} /> abrir WhatsApp</button>}
-              </div>
-            </> : <p>{whatsappError}</p>}
-          </div>
-        </div>}
 
         <div className="assistant-chat" aria-live="polite">
           {messages.map((message) => (
@@ -481,7 +384,7 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
               {message.role === "assistant" && <span className="assistant-avatar"><Bot size={17} /></span>}
               <div className="assistant-bubble">
                 <p>{message.text}</p>
-                {message.role === "assistant" && <small>{message.mode === "ai" ? "Nivo Agro · online" : message.mode === "action" ? "Ação concluída" : "Hydra · modo local"}</small>}
+                {message.role === "assistant" && <small>{message.mode === "ai" ? "Hydra · online" : message.mode === "action" ? "Ação concluída" : "Hydra · local"}</small>}
               </div>
             </article>
           ))}
@@ -490,13 +393,13 @@ export function HydraAssistantScreen({ account, onBack }: Props) {
         </div>
 
         <form className="assistant-composer" onSubmit={submit}>
-          <div className="assistant-composer-field"><textarea value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Pergunte ao Nivo sobre água, animais, tarefas, clima ou setores…" maxLength={600} rows={2} /><small>{question.length}/600</small></div>
+          <div className="assistant-composer-field"><textarea value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Pergunte sobre clima, água, animais, tarefas ou setores…" maxLength={600} rows={2} /><small>{question.length}/600</small></div>
           <button type="submit" disabled={busy || !question.trim()} aria-label="Enviar pergunta"><Send size={19} /></button>
         </form>
       </section>
 
       <div className="assistant-data-strip"><span><Nfc size={15} /> {context.herd.identified}/{context.herd.total} com NFC</span><span><CheckCircle2 size={15} /> {context.activities.completionRate}% concluídas</span><span><RadioTower size={15} /> {context.monitoring.withOccurrence} ocorrências</span></div>
-      <div className="assistant-boundaries"><ShieldCheck size={18} /><p><strong>Nivo Agro com dados reais</strong><small>O Nivo consulta os registros autorizados do Hydra e não inventa dados. Não faz diagnóstico e não indica medicamentos, doses ou tratamento.</small></p></div>
+      <div className="assistant-boundaries"><ShieldCheck size={18} /><p><strong>Limites do assistente</strong><small>O Hydra ajuda a consultar e organizar registros. Não faz diagnóstico e não indica medicamentos, doses ou tratamento.</small></p></div>
     </div>
   );
 }

@@ -30,20 +30,6 @@ import {
 import { capturePhoto, signedPrivateUrl, uploadPrivateImage } from "../services/media-service";
 import { signInWithStaffCode } from "../services/staff-service";
 import { backendConfigured, supabase } from "../services/supabase";
-import {
-  activateLocalHydraCodeAccount,
-  clearActiveLocalHydraCodeAccount,
-  loadActiveLocalHydraCodeAccount,
-  saveLocalHydraCodeAccount,
-  signInWithHydraCode,
-  signInWithLocalHydraCode,
-} from "../services/code-auth-service";
-import {
-  createHydraWithNivo,
-  loginHydraWithNivo,
-  syncHydraFarmToNivo,
-  type NivoIssuedCodes,
-} from "../services/nivo-link-service";
 
 export type SyncStatus = "saved" | "saving" | "offline" | "error";
 
@@ -129,20 +115,16 @@ export function useHydraStore() {
   const [lastError, setLastError] = useState("");
   const accountRef = useRef<HydraAccount | null>(null);
   const userRef = useRef<User | null>(null);
-  const localCodeUserRef = useRef<string | null>(null);
   const syncQueue = useRef<Promise<void>>(Promise.resolve());
   const bootId = useRef(0);
 
   const applyAccount = useCallback((next: HydraAccount | null) => {
-    // Contas locais e vinculadas ao Nivo não podem conceder privilégios de
-    // administração do aplicativo. Essas permissões vêm do servidor do Hydra.
-    const verified = next && localCodeUserRef.current ? { ...next, role: "user" as const } : next;
-    accountRef.current = verified;
-    setAccount(verified);
+    accountRef.current = next;
+    setAccount(next);
   }, []);
 
   const refreshPublicContent = useCallback(async () => {
-    if (!backendConfigured || !accountRef.current || accountRef.current.bannedAt || localCodeUserRef.current) return;
+    if (!backendConfigured || !accountRef.current || accountRef.current.bannedAt) return;
     try {
       const content = await loadPublicAdminContent();
       setAnnouncements(content.announcements);
@@ -248,32 +230,16 @@ export function useHydraStore() {
       return;
     }
 
-    void supabase.auth.getSession().then(async ({ data }) => {
+    void supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
-      if (data.session?.user) {
-        localCodeUserRef.current = null;
-        void loadUser(data.session.user);
-        return;
-      }
-      const localAccount = await loadActiveLocalHydraCodeAccount();
-      if (!active) return;
-      if (localAccount) {
-        localCodeUserRef.current = localAccount.id;
-        userRef.current = null;
-        applyAccount(localAccount);
-        setSyncStatus("saved");
-        void syncHydraFarmToNivo(localAccount).catch(() => undefined);
-      }
-      setReady(true);
+      if (data.session?.user) void loadUser(data.session.user);
+      else setReady(true);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       window.setTimeout(() => {
         if (!active) return;
-        if (session?.user) {
-          localCodeUserRef.current = null;
-          if (session.user.id !== userRef.current?.id) void loadUser(session.user);
-        } else if (!localCodeUserRef.current) {
+        if (event === "SIGNED_OUT" || !session?.user) {
           bootId.current += 1;
           userRef.current = null;
           applyAccount(null);
@@ -281,6 +247,8 @@ export function useHydraStore() {
           setLinks([]);
           setSyncStatus("saved");
           setReady(true);
+        } else if (session.user.id !== userRef.current?.id) {
+          void loadUser(session.user);
         }
       }, 0);
     });
@@ -341,75 +309,6 @@ export function useHydraStore() {
       return { ok: false, message: friendlyError(error) };
     }
   }, [loadUser]);
-
-  const activateCreatedCodeAccount = useCallback(async (userId: string): Promise<AuthResult> => {
-    try {
-      const localAccount = await activateLocalHydraCodeAccount(userId);
-      localCodeUserRef.current = localAccount.id;
-      userRef.current = null;
-      applyAccount(localAccount);
-      setReady(true);
-      setSyncStatus("saved");
-      setLastError("");
-      return { ok: true, message: "Conta criada." };
-    } catch (error) {
-      return { ok: false, message: friendlyError(error) };
-    }
-  }, [applyAccount]);
-
-  const applyLinkedLocalAccount = useCallback((linked: HydraAccount) => {
-    localCodeUserRef.current = linked.id;
-    userRef.current = null;
-    applyAccount(linked);
-    setReady(true);
-    setSyncStatus("saved");
-    setLastError("");
-  }, [applyAccount]);
-
-  const loginNivo = useCallback(async (code: string): Promise<AuthResult> => {
-    try {
-      const { account: linked } = await loginHydraWithNivo(code);
-      applyLinkedLocalAccount(linked);
-      return { ok: true, message: "Conta Nivo conectada ao Hydra Agro." };
-    } catch (error) {
-      setReady(true);
-      return { ok: false, message: friendlyError(error) };
-    }
-  }, [applyLinkedLocalAccount]);
-
-  const createNivoLinkedAccount = useCallback(async (): Promise<{ result: AuthResult; issued?: NivoIssuedCodes; userId?: string }> => {
-    try {
-      const { account: linked, issued } = await createHydraWithNivo();
-      return { result: { ok: true, message: "Conta Nivo criada e conectada." }, issued, userId: linked.id };
-    } catch (error) {
-      setReady(true);
-      return { result: { ok: false, message: friendlyError(error) } };
-    }
-  }, []);
-
-  const loginCode = useCallback(async (code: string): Promise<AuthResult> => {
-    try {
-      const localAccount = await signInWithLocalHydraCode(code);
-      if (localAccount) {
-        localCodeUserRef.current = localAccount.id;
-        userRef.current = null;
-        applyAccount(localAccount);
-        setReady(true);
-        setSyncStatus("saved");
-        setLastError("");
-        return { ok: true, message: "Acesso liberado." };
-      }
-      const data = await signInWithHydraCode(code);
-      if (!data.user) throw new Error("Sessão inválida.");
-      localCodeUserRef.current = null;
-      await loadUser(data.user);
-      if (accountRef.current?.id !== data.user.id) throw new Error("Não foi possível carregar sua conta. Tente novamente.");
-      return { ok: true, message: "Acesso liberado." };
-    } catch (error) {
-      setReady(true);
-      return { ok: false, message: friendlyError(error) };
-    }
-  }, [applyAccount, loadUser]);
 
   const loginStaff = useCallback(async (code: string): Promise<AuthResult> => {
     try {
@@ -478,13 +377,6 @@ export function useHydraStore() {
       subscription: previous.subscription,
     };
     applyAccount(next);
-    if (localCodeUserRef.current === next.id) {
-      setSyncStatus("saved");
-      setLastError("");
-      return saveLocalHydraCodeAccount(next).then(() => {
-        void syncHydraFarmToNivo(next).catch(() => undefined);
-      });
-    }
     setSyncStatus(navigator.onLine ? "saving" : "offline");
     const serializedNext = JSON.stringify(next);
     const localPersistence = Promise.all([
@@ -521,24 +413,20 @@ export function useHydraStore() {
 
   const logout = useCallback(async () => {
     const userId = userRef.current?.id ?? accountRef.current?.id;
-    const localUserId = localCodeUserRef.current;
     bootId.current += 1;
     try {
-      if (localUserId) {
-        await clearActiveLocalHydraCodeAccount();
-      } else if (supabase) {
+      if (supabase) {
         const { error } = await supabase.auth.signOut({ scope: "local" });
         if (error) throw error;
       }
     } finally {
-      localCodeUserRef.current = null;
       userRef.current = null;
       applyAccount(null);
       setAnnouncements([]);
       setLinks([]);
       setLastError("");
       setSyncStatus("saved");
-      if (userId && !localUserId) {
+      if (userId) {
         await Promise.all([
           Preferences.remove({ key: accountCacheKey(userId) }),
           Preferences.remove({ key: accountPendingKey(userId) }),
@@ -680,10 +568,6 @@ export function useHydraStore() {
     syncStatus,
     lastError,
     login,
-    loginCode,
-    loginNivo,
-    createNivoLinkedAccount,
-    activateCreatedCodeAccount,
     loginGoogle,
     loginStaff,
     createAccount,

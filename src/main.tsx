@@ -46,6 +46,7 @@ import "./native-screen-cleanup.css";
 import "./auth-green-identity.css";
 import "./auth-reference.css";
 import "./product-finish.css";
+import "./desktop-phone-frame.css";
 import "./maintenance-runtime";
 import "./interface-priority-polish.css";
 import "./features/home/home-property-hero-polish.css";
@@ -55,8 +56,6 @@ import { PublicTagLookup } from "./features/herd/public-tag-lookup";
 import { NotFoundScreen } from "./features/system/not-found-screen";
 import { setupPushNotifications } from "./services/push-notifications";
 import { renderIosPreviewRoute } from "./ios-preview";
-import "./nivo-icon-language.css";
-import "./desktop-pc-perfect.css";
 
 if (typeof document !== "undefined") {
   const platform = Capacitor.getPlatform();
@@ -79,8 +78,40 @@ const notFoundMode =
   !rootWebPath &&
   !standalonePublicMode &&
   !preview;
+const desktopPhoneMode =
+  typeof window !== "undefined" &&
+  !Capacitor.isNativePlatform() &&
+  window.innerWidth >= 1024 &&
+  !path.startsWith("/preview/") &&
+  !standalonePublicMode &&
+  !notFoundMode;
+
 function HydraWebApp() {
   return <><HydraAppShell /><PlatformChoiceDialog /></>;
+}
+
+function DesktopPhonePresentation() {
+  const mobileUrl = typeof window !== "undefined" ? window.location.href : "/";
+
+  return (
+    <main className="desktop-phone-stage" aria-label="Hydra Agro em visualização móvel">
+      <div aria-hidden="true" />
+      <div className="desktop-phone-device">
+        <span className="desktop-phone-side-button desktop-phone-side-button-left" aria-hidden="true" />
+        <span className="desktop-phone-side-button desktop-phone-side-button-right" aria-hidden="true" />
+        <div className="desktop-phone-screen">
+          <span className="desktop-phone-island" aria-hidden="true" />
+          <iframe
+            className="desktop-phone-iframe"
+            src={mobileUrl}
+            title="Hydra Agro — versão mobile"
+            allow="clipboard-read; clipboard-write; camera; microphone"
+          />
+        </div>
+      </div>
+      <div aria-hidden="true" />
+    </main>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -90,6 +121,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <NotFoundScreen />
       ) : standalonePublicMode ? (
         <PublicTagLookup />
+      ) : desktopPhoneMode ? (
+        <DesktopPhonePresentation />
       ) : (
         <HydraWebApp />
       )

@@ -16,7 +16,6 @@ import {
   Instagram,
   LoaderCircle,
   LockKeyhole,
-  KeyRound,
   LogOut,
   Mail,
   Menu,
@@ -32,11 +31,6 @@ import { showAppToast } from "../../components/modal-system";
 import type { AppLink, AppRoute, AuthResult, HydraAccount, UpdateAccount } from "../../lib/hydra-types";
 import { hydraSupport } from "../../lib/support";
 import { ProfileInformation, type ProfileInformationKind } from "./profile-information";
-import "./profile-products.css";
-import { enrollHydraCodeAccess, getHydraCodeStatus, type IssuedHydraCodes } from "../../services/code-auth-service";
-import "./profile-code-access.css";
-
-const codeAuthEnabled = true;
 
 type Props = {
   account: HydraAccount;
@@ -80,11 +74,6 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
   const [securityOpen, setSecurityOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [logoutConfirm, setLogoutConfirm] = useState(false);
-  const [accessOpen, setAccessOpen] = useState(false);
-  const [accessBusy, setAccessBusy] = useState(false);
-  const [accessHasCode, setAccessHasCode] = useState(false);
-  const [accessIssued, setAccessIssued] = useState<IssuedHydraCodes | null>(null);
-  const [accessError, setAccessError] = useState("");
   const [info, setInfo] = useState<ProfileInformationKind | null>(null);
   const [profile, setProfile] = useState<ProfileDraft>(() => draftFromAccount(account));
   const [notificationDraft, setNotificationDraft] = useState({ pushNotifications: account.settings.pushNotifications });
@@ -107,37 +96,6 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
     setProfile(draftFromAccount(account));
     setError("");
     setEditOpen(true);
-  }
-
-  async function openCodeAccess() {
-    setSettingsOpen(false);
-    setAccessOpen(true);
-    setAccessIssued(null);
-    setAccessError("");
-    setAccessBusy(true);
-    try {
-      const { hasCode } = await getHydraCodeStatus();
-      setAccessHasCode(hasCode);
-    } catch (caught) {
-      setAccessError(caught instanceof Error ? caught.message : "Não foi possível consultar seu acesso.");
-    } finally {
-      setAccessBusy(false);
-    }
-  }
-
-  async function generateAccountCodes() {
-    if (accessBusy || accessHasCode) return;
-    setAccessError("");
-    setAccessBusy(true);
-    try {
-      const codes = await enrollHydraCodeAccess();
-      setAccessIssued(codes);
-      setAccessHasCode(true);
-    } catch (caught) {
-      setAccessError(caught instanceof Error ? caught.message : "Não foi possível gerar seus códigos.");
-    } finally {
-      setAccessBusy(false);
-    }
   }
 
   function openInjectedMenu(selector: ".theme-menu-row") {
@@ -275,7 +233,7 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
     }
   }
 
-  const isAdmin = account.role === "owner";
+  const isAdmin = ["moderator", "admin", "owner"].includes(account.role);
   const locationSummary = account.property.municipality && account.property.state
     ? `${account.property.municipality}, ${account.property.state}${account.property.postalCode ? ` · CEP ${account.property.postalCode}` : ""}`
     : "Complete UF e CEP em Minha propriedade";
@@ -313,11 +271,14 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
       <section className="profile-group">
         <span className="group-label">MINHA CONTA</span>
         <div className="profile-menu-card">
-          <MenuRow icon={<UserRound size={21} />} title="Dados pessoais" subtitle={codeAuthEnabled ? "Nome e informações da sua conta" : account.email} onClick={openEditor} />
+          <MenuRow icon={<UserRound size={21} />} title="Dados pessoais" subtitle={account.email} onClick={openEditor} />
           <MenuRow icon={<Sprout size={21} />} title="Minha propriedade" subtitle={locationSummary} onClick={() => navigate("property")} />
           <MenuRow icon={<UsersRound size={21} />} title="Equipe e operações" subtitle="Funcionários, relatórios e ocorrências" onClick={() => navigate("operations" as AppRoute)} />
         </div>
       </section>
+
+      <button className="logout-button" onClick={() => setLogoutConfirm(true)}><LogOut size={19} /> Sair desta conta</button>
+      <p className="profile-version">Hydra Agro · versão {__HYDRA_VERSION__} · {__HYDRA_BUILD__}</p>
 
       <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)} eyebrow="PERFIL" title="Menu e configurações" wide>
         <div className="profile-settings-sheet">
@@ -325,10 +286,9 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
           <div className="profile-menu-card">
             {isAdmin && <MenuRow icon={<Palette size={21} />} title="Aparência" subtitle="Modo claro ou escuro · BETA" onClick={() => openInjectedMenu(".theme-menu-row")} />}
             <MenuRow icon={<Bell size={21} />} title="Notificações" subtitle="Avisos da conta e da propriedade" onClick={() => { setSettingsOpen(false); openNotificationPreferences(); }} />
-            {codeAuthEnabled ? <MenuRow icon={<KeyRound size={21} />} title="Código de acesso" subtitle="Gerar ou consultar o acesso por código" onClick={() => void openCodeAccess()} /> : <MenuRow icon={<LockKeyhole size={21} />} title="Segurança" subtitle="Alterar e-mail ou senha" onClick={() => { setSettingsOpen(false); setSecurity({ email: account.email, password: "", confirmPassword: "" }); setSecurityFeedback(null); setSecurityOpen(true); }} />}
+            <MenuRow icon={<LockKeyhole size={21} />} title="Segurança" subtitle="Alterar e-mail ou senha" onClick={() => { setSettingsOpen(false); setSecurity({ email: account.email, password: "", confirmPassword: "" }); setSecurityFeedback(null); setSecurityOpen(true); }} />
           </div>
 
-          <div className="profile-menu-card"><MenuRow icon={<LogOut size={21} />} title="Sair da conta" onClick={() => { setSettingsOpen(false); setLogoutConfirm(true); }} /></div>
           <span className="profile-settings-label">INFORMAÇÕES</span>
           <div className="profile-menu-card">
             <MenuRow icon={<FileText size={21} />} title="Jurídico" subtitle="LGPD, responsabilidades e direitos" onClick={() => { setSettingsOpen(false); setInfo("legal"); }} />
@@ -345,23 +305,6 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
             <MenuRow icon={<Instagram size={21} />} title="Instagram" subtitle={hydraSupport.instagramHandle} onClick={() => window.open(hydraSupport.instagramUrl, "_blank", "noopener,noreferrer")} />
             {links.map((link) => <MenuRow key={link.id} icon={<ExternalLink size={21} />} title={link.label} subtitle={link.description} onClick={() => window.open(link.url, "_blank", "noopener,noreferrer")} />)}
           </div>
-        </div>
-      </Modal>
-
-      <Modal open={accessOpen} onClose={() => setAccessOpen(false)} eyebrow="ACESSO PRIVADO" title="Seu código de acesso" dismissible={!accessBusy}>
-        <div className="profile-code-panel">
-          {accessBusy && <p role="status">Consultando seu acesso…</p>}
-          {!accessBusy && accessError && <p role="alert" className="form-error">{accessError}</p>}
-          {!accessBusy && !accessError && !accessHasCode && !accessIssued && <>
-            <p>Seu acesso atual ainda usa o login antigo. Gere seu código e salve também a chave de recuperação antes de sair da conta.</p>
-            <button type="button" className="primary-button full" onClick={() => void generateAccountCodes()}>Gerar códigos de acesso</button>
-          </>}
-          {!accessBusy && accessHasCode && !accessIssued && <p>Esta conta já tem acesso por código. Se perdeu seu código, use o código de recuperação na tela de entrada para gerar outros.</p>}
-          {accessIssued && <div className="profile-issued-codes">
-            <div><small>Código de acesso</small><strong>{accessIssued.accessCode}</strong><button type="button" onClick={() => void navigator.clipboard.writeText(accessIssued.accessCode).then(() => showAppToast("Código copiado")).catch(() => showAppToast("Não foi possível copiar", "error"))}>Copiar</button></div>
-            <div><small>Código de recuperação</small><strong>{accessIssued.recoveryCode}</strong><button type="button" onClick={() => void navigator.clipboard.writeText(accessIssued.recoveryCode).then(() => showAppToast("Recuperação copiada")).catch(() => showAppToast("Não foi possível copiar", "error"))}>Copiar</button></div>
-            <p>Guarde os dois códigos. Eles não serão exibidos novamente.</p>
-          </div>}
         </div>
       </Modal>
 
@@ -423,7 +366,7 @@ export function ProfileScreen({ account, links, updateAccount, navigate, logout,
       </Modal>
 
       <Modal open={logoutConfirm} onClose={() => setLogoutConfirm(false)} eyebrow="CONFIRMAÇÃO" title="Finalizar sessão" centered dismissible={saving !== "logout"}>
-        <div className="confirm-action"><span><LogOut size={27} /></span><p>Deseja sair desta conta?</p>{error && <p className="form-error" role="alert">{error}</p>}<div className="modal-action-row"><button className="secondary-button" onClick={() => setLogoutConfirm(false)} disabled={saving === "logout"}>Cancelar</button><LoadingButton className="danger-button" onClick={() => void confirmLogout()} loading={saving === "logout"} loadingLabel="Aguarde">Sair</LoadingButton></div></div>
+        <div className="confirm-action"><span><LogOut size={27} /></span><p>Deseja sair desta conta?</p>{error && <p className="form-error" role="alert">{error}</p>}<div className="modal-action-row"><button className="secondary-button" onClick={() => setLogoutConfirm(false)} disabled={saving === "logout"}>Cancelar</button><LoadingButton className="danger-button" onClick={() => void confirmLogout()} loading={saving === "logout"} loadingLabel="Saindo…">Sair</LoadingButton></div></div>
       </Modal>
     </div>
   );

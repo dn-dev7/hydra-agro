@@ -8,8 +8,7 @@ import { SplashBrand } from "./components/brand";
 import { requestCloseTopOverlay, useAppOverlay, useModalNavigation } from "./components/modal-system";
 import { BackendSetupScreen, BannedScreen, PasswordRecoveryScreen, SyncBanner } from "./components/system-state";
 import { AppToastRegion } from "./components/ui";
-import { HydraCodeAuthFlow } from "./features/auth/hydra-code-auth";
-import { HydraCodeOnboarding } from "./features/auth/hydra-code-onboarding";
+import { AuthFlow } from "./features/auth/auth-flow";
 import { HomeScreen } from "./features/home/home-screen";
 import { PublicAnimalScreen, clearPublicAnimalParams, readPublicAnimalSnapshot } from "./features/herd/public-animal-card";
 import { StaffHomeScreen } from "./features/staff/staff-home-screen";
@@ -69,11 +68,11 @@ export default function HydraApp() {
   const mainRouteIds: AppRoute[] = mainTabs.map((tab) => tab.id);
   const [splash, setSplash] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [returnToLogin, setReturnToLogin] = useState(false);
   async function logoutToLogin() {
     if (loggingOut) return;
     setLoggingOut(true);
-    setOnboardingDone(false);
+    setReturnToLogin(true);
     try { await store.logout(); setRoute("home"); setQuickOpen(false); }
     finally { setLoggingOut(false); }
   }
@@ -201,7 +200,7 @@ export default function HydraApp() {
       setQuickOpen(false);
       return;
     }
-    if ((route === "admin" || route === "research") && store.account.role !== "owner") setRoute("home");
+    if (route === "admin" && !["moderator", "admin", "owner"].includes(store.account.role)) setRoute("home");
   }, [route, store.account?.id, store.account?.role, store.account?.access.kind, store.account?.access.staffRole]);
 
   useEffect(() => {
@@ -281,7 +280,7 @@ export default function HydraApp() {
     if (next === route) return;
     const access = store.account?.access;
     if (access?.kind === "staff" && !staffRouteAllowed(next, access.staffRole)) return;
-    if ((next === "admin" || next === "research") && store.account?.role !== "owner") return;
+    if (next === "admin" && !["moderator", "admin", "owner"].includes(store.account?.role ?? "user")) return;
     const currentIndex = mainTabs.findIndex((tab) => tab.id === route);
     const nextIndex = mainTabs.findIndex((tab) => tab.id === next);
     setRouteMotion(currentIndex >= 0 && nextIndex >= 0 && nextIndex < currentIndex ? "back" : "forward");
@@ -337,31 +336,12 @@ export default function HydraApp() {
 
   if (!store.ready) return splashLayer;
 
-  if (loggingOut || !store.account) return <><HydraCodeAuthFlow initialView="landing" onCodeLogin={store.loginCode} onCreatedLocalAccount={store.activateCreatedCodeAccount} onStaffLogin={store.loginStaff} onNivoLogin={store.loginNivo} onNivoCreate={store.createNivoLinkedAccount} />{loggingOut ? null : splashLayer}</>;
+  if (loggingOut) return <main className="auth-logout-status" role="status" aria-live="polite"><span>Saindo…</span><p>Encerrando sua sessão</p></main>;
+  if (!store.account) return <><AuthFlow initialView={returnToLogin ? "auth" : "landing"} onLogin={store.login} onGoogleLogin={store.loginGoogle} onStaffLogin={store.loginStaff} onSignup={store.createAccount} onResetPassword={store.resetPassword} />{splashLayer}</>;
   if (store.account.bannedAt) return <><BannedScreen reason={store.account.banReason} logout={logoutToLogin} />{splashLayer}</>;
   if (passwordRecovery) return <><PasswordRecoveryScreen save={async (password) => { const result = await store.changeCredentials({ password }); if (result.ok) window.setTimeout(() => setPasswordRecovery(false), 650); return result; }} logout={async () => { setPasswordRecovery(false); await logoutToLogin(); }} />{splashLayer}</>;
 
   const account = store.account;
-  let pendingCodeOnboarding = false;
-  if (!onboardingDone && account.access.kind !== "staff") {
-    try {
-      pendingCodeOnboarding = window.sessionStorage.getItem("hydra-code-onboarding") === account.id;
-    } catch { /* Ambiente sem storage: preservar acesso à conta. */ }
-  }
-  if (pendingCodeOnboarding) {
-    return <HydraCodeOnboarding initialName={account.profile.name} onFinish={async (preferences) => {
-      await store.updateAccount((current) => ({
-        ...current,
-        profile: { ...current.profile, name: preferences.name },
-      }), { requireRemote: true });
-      try {
-        window.localStorage.setItem("hydra-code-preferences:" + account.id, JSON.stringify(preferences));
-        window.sessionStorage.removeItem("hydra-code-onboarding");
-      } catch { /* Preferências de UI não bloqueiam o acesso. */ }
-      setOnboardingDone(true);
-      setRoute("home");
-    }} />;
-  }
   const isStaff = account.access.kind === "staff";
   const canOpenAnimalManagement = !isStaff || account.access.staffRole === "manager";
 
@@ -389,7 +369,7 @@ export default function HydraApp() {
       case "climate": return <ClimateScienceScreen account={account} onBack={goBack} navigate={navigate} />;
       case "research": return <ResearchImpactScreen account={account} onBack={goBack} />;
       case "plus": return <PlusScreen account={account} updateAccount={store.updateAccount} onBack={goBack} />;
-      case "admin": return account.role === "owner" ? <AdminScreen account={account} onBack={goBack} /> : isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
+      case "admin": return ["moderator", "admin", "owner"].includes(account.role) ? <AdminScreen account={account} onBack={goBack} /> : isStaff ? <StaffHomeScreen account={account} announcements={store.announcements} navigate={navigate} /> : <HomeScreen account={account} announcements={store.announcements} navigate={navigate} onQuickAction={openQuick} />;
       default: return null;
     }
   }
