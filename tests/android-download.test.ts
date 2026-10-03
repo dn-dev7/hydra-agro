@@ -20,10 +20,10 @@ describe("download oficial do Android", () => {
     expect(page?.sections.some((section) => section.heading === "iPhone e iPad")).toBe(true);
   });
 
-  it("consulta somente a latest release oficial e exige APK com nome padronizado", () => {
-    expect(releaseScript).toContain("https://api.github.com/repos/dnmtfe3-cpu/hydra-agr/releases/latest");
+  it("mantém o APK restaurado da versão 1.3.0 no repositório oficial", () => {
+    expect(releaseScript).toContain('const releaseTag = "v1.3.0"');
     expect(releaseScript).toContain("/^HydraAgro-v.+\\.apk$/i");
-    expect(releaseScript).toContain("A primeira versão Android oficial ainda não foi publicada.");
+    expect(releaseScript).toContain('const assetName = "HydraAgro-v1.3.0.apk"');\n    expect(releaseScript).toContain("/releases/download/${releaseTag}/${assetName}");
   });
 
   it("publica a rota e oferece Android ou Web somente depois da autenticação", () => {
