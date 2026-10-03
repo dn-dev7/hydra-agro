@@ -3,7 +3,7 @@
 
 create or replace function public.property_ranking()
 returns table (
-  position bigint,
+  "position" bigint,
   property_id text,
   property_name text,
   municipality text,
@@ -35,7 +35,7 @@ as $$
       and profile.banned_at is null
   ), ranked as (
     select
-      row_number() over (order by xp desc, lower(property_name), property_id) as position,
+      row_number() over (order by xp desc, lower(property_name), property_id) as "position",
       property_id,
       owner_user_id,
       property_name,
@@ -44,7 +44,7 @@ as $$
     from property_scores
   )
   select
-    ranked.position,
+    ranked."position",
     ranked.property_id,
     ranked.property_name,
     ranked.municipality,
@@ -53,7 +53,7 @@ as $$
   from ranked
   where auth.uid() is not null
     and public.is_active_user()
-  order by ranked.position
+  order by ranked."position"
   limit 50;
 $$;
 
