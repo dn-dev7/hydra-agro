@@ -171,7 +171,7 @@ as $$
   left join public.properties p on p.owner_user_id = pr.id
   where pr.id <> auth.uid() and pr.banned_at is null
   order by (p.municipality = (select municipality from public.properties where owner_user_id = auth.uid() limit 1)) desc,
-           followers desc,
+           (select count(*) from public.user_follows f where f.following_id = pr.id) desc,
            pr.full_name asc
   limit greatest(1, least(coalesce(p_limit,20), 50));
 $$;
