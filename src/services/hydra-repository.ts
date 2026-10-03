@@ -280,11 +280,37 @@ export async function recordNfcReading(code: string) {
 export async function signUp(payload: SignupPayload) {
   const client = requireSupabase();
   const email = payload.email.trim().toLowerCase();
-  const { data: result, error: invokeError } = await client.functions.invoke("signup-no-confirmation", { body: { name: payload.name.trim(), email, phone: payload.phone.trim(), password: payload.password, property: payload.property } });
-  throwIfError(invokeError);
+
+  const { data: result, error: invokeError } = await client.functions.invoke("signup-no-confirmation", {
+    body: {
+      name: payload.name.trim(),
+      email,
+      phone: payload.phone.trim(),
+      password: payload.password,
+      property: payload.property,
+    },
+  });
+
   const response = result as { ok?: boolean; message?: string; code?: string } | null;
-  if (!response?.ok) throw new Error(response?.message || "Não foi possível criar a conta.");
-  const { data, error } = await client.auth.signInWithPassword({ email, password: payload.password });
+  if (!invokeError && response?.ok) {
+    const { data, error } = await client.auth.signInWithPassword({ email, password: payload.password });
+    throwIfError(error);
+    return data;
+  }
+
+  // Fallback seguro para projetos novos onde a função administrativa de cadastro
+  // ainda não esteja publicada. O trigger handle_new_user cria perfil e propriedade.
+  const { data, error } = await client.auth.signUp({
+    email,
+    password: payload.password,
+    options: {
+      data: {
+        full_name: payload.name.trim(),
+        phone: payload.phone.trim(),
+        property: payload.property,
+      },
+    },
+  });
   throwIfError(error);
   return data;
 }
