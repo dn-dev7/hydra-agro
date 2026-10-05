@@ -147,7 +147,7 @@ Deno.serve(async (req) => {
     const resendKey = Deno.env.get("RESEND_API_KEY")?.trim();
     const from = Deno.env.get("HYDRA_EMAIL_FROM")?.trim();
     const appUrl = (Deno.env.get("HYDRA_APP_URL")?.trim() || "https://www.hydraagro.sbs").replace(/\/$/, "");
-    if (!supabaseUrl || !serviceRoleKey || !resendKey || !from) return json(req, { ok: false, message: "O envio por e-mail está temporariamente indisponível." }, 503);
+    if (!supabaseUrl || !serviceRoleKey) return json(req, { ok: false, message: "O serviço de autenticação está temporariamente indisponível." }, 503);
 
     const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { autoRefreshToken: false, persistSession: false } });
 
@@ -193,13 +193,21 @@ Deno.serve(async (req) => {
     let html = "";
 
     if (purpose === "login_code") {
-      const { data, error } = await admin.auth.admin.generateLink({ type: "magiclink", email } as never);
-      // Resposta neutra: não revelamos se o e-mail existe.
-      if (error || !data?.properties) return json(req, { ok: true });
-      code = String((data.properties as unknown as { email_otp?: string }).email_otp ?? "").replace(/\D/g, "").slice(0, 10);
-      if (!/^\d{6,10}$/.test(code)) return json(req, { ok: true });
-      subject = `${code} · seu código de acesso ao Hydra Agro`;
-      html = emailCodeHtml(code);
+      await Promise.all([
+        saveGuard(admin, emailGuardId, purpose, emailGuard.count, emailGuard.windowStartedAt),
+        saveGuard(admin, ipGuardId, purpose, ipGuard.count, ipGuard.windowStartedAt),
+      ]);
+
+      // O login por código usa o envio nativo do Supabase Auth.
+      // Assim o novo projeto não depende de RESEND_API_KEY para autenticação.
+      const { error } = await admin.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false },
+      });
+
+      // Resposta neutra: não revela se o e-mail está cadastrado.
+      if (error) console.error("auth-email native otp error", error.message);
+      return json(req, { ok: true });
     } else {
       code = randomCode();
       const codeHash = await digest(`${serviceRoleKey}:${purpose}:${email}:${code}`);
@@ -215,6 +223,10 @@ Deno.serve(async (req) => {
       saveGuard(admin, emailGuardId, purpose, emailGuard.count, emailGuard.windowStartedAt),
       saveGuard(admin, ipGuardId, purpose, ipGuard.count, ipGuard.windowStartedAt),
     ]);
+
+    if (!resendKey || !from) {
+      return json(req, { ok: false, message: "O envio de códigos para cadastro e recuperação está temporariamente indisponível." }, 503);
+    }
 
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
