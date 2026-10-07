@@ -49,6 +49,7 @@ import "./product-finish.css";
 import "./desktop-phone-frame.css";
 import "./maintenance-runtime";
 import "./interface-priority-polish.css";
+import "./responsive-final.css";
 import "./features/home/home-property-hero-polish.css";
 import { HydraAppShell } from "./components/hydra-app-shell";
 import { PlatformChoiceDialog } from "./components/platform-choice-dialog";
