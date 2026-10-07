@@ -166,25 +166,8 @@ export function AuthFlow({ initialView = "landing", onLogin, onStaffLogin, onSig
       await requestSignupCode(signup.email);
       setSignupCode(""); setCodeCooldown(60); setSignupStep(4);
       setNotice("Enviamos um código para confirmar seu e-mail antes de criar a conta.");
-    } catch {
-      // O provedor personalizado de e-mail é opcional no backend novo.
-      // Se ele não estiver configurado, usa o fluxo nativo do Supabase Auth.
-      const result = await onSignup({
-        name: signup.name,
-        email: signup.email,
-        phone: "",
-        password: signup.password,
-        property,
-      });
-      if (!result.ok) {
-        setError(result.message);
-        return;
-      }
-      setMode("login");
-      setLoginStep("email");
-      setNotice(result.needsEmailConfirmation
-        ? "Conta criada. Confirme o link enviado ao seu e-mail e depois entre."
-        : "Conta criada. Você já pode entrar.");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Não foi possível enviar o código agora.");
     } finally { setSubmitting(false); }
   }
 
